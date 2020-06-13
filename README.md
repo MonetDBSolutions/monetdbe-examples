@@ -10,7 +10,7 @@ daily life, we collected a handful of examples to try it out.
 
 | program | description|
 | ------------- | ----------------------------------------------------------- |
-| helloword.c  |just start/stop an :inmemory: database |
+| helloworld.c  |just start/stop an :inmemory: database |
 |  helloall.c    |illustrates the same, but switching between different databases|
 |  kickoff.c    |the kickoff example to test part of the api|
 |  duckdb.c  |a comparison with another embedded database|
