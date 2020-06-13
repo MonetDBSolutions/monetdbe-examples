@@ -14,7 +14,7 @@ daily life, we collected a handful of examples to try it out.
 |  helloall.c    |illustrates the same, but switching between different databases|
 |  kickoff.c    |the kickoff example to test part of the api|
 |  duckdb.c  |a comparison with another embedded database|
-|  voc.c |a more extensive example to load the MonetDB VOC tutorial|
+|  voc.c |a more extensive example based on the MonetDB VOC tutorial|
 
 Feel free to propose other tiny examples that help users to explore the system.
 
