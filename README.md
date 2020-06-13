@@ -22,3 +22,7 @@ Feel free to propose other tiny examples that help users to explore the system.
 You should have obtained a copy of libmonetdbe.so from the MonetDB download area
 or created one using a build from source. The location of this library should be made 
 known in src/CMakeList.c
+
+mkdir build && cd build
+CMAKE_PREFIX_PATH=/tmp/monetdb/include/cmake/ cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
