@@ -14,6 +14,12 @@ daily life, we collected a handful of examples to try it out.
 |  helloall.c    |illustrates the same, but switching between different databases|
 |  voc.c |a more extensive example to load the MonetDB VOC tutorial|
 |  mylist.c    |illustrates how to create table in :memory: backup and re-use|
+|  kickoff.c    |the kickoff example to test part of the api|
 |  duckdb.c  |a comparison with another embedded database|
 
 Feel free to propose other tiny examples that help users to explore the system.
+
+## Installation
+You should have obtained a copy of libmonetdbe.so from the MonetDB download area
+or created one using a build from source. The location of this library should be made 
+known in src/CMakeList.c
