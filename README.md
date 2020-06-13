@@ -14,6 +14,7 @@ daily life, we collected a handful of examples to try it out.
 -  mylist.c    illustrates how to create table in :memory:, create backup and re-use
 -  duckdb.c  a comparison with another embedded database
 
+| ------------- | -----------------------------------------------------------
 | helloword.c  |just start an :inmemory: database and execute a minimal query
 |  helloall.c    |illustrates the same, but switching between different databases
 |  voc.c |a more extensive example to load the MonetDB VOC turtorial
