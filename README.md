@@ -1,4 +1,4 @@
-# mdbe-examples
+# monetdbe-examples
 A small collection of C programs to illustrate MonetDBe
 
 In June 2020 we annouced the development of the embedded version of MonetDB. 
