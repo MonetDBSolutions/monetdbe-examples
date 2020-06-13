@@ -12,7 +12,7 @@ daily life, we collected a handful of examples to try it out.
 | ------------- | ----------------------------------------------------------- |
 | helloword.c  |just start an :inmemory: database and execute a minimal query|
 |  helloall.c    |illustrates the same, but switching between different databases|
-|  voc.c |a more extensive example to load the MonetDB VOC turtorial|
+|  voc.c |a more extensive example to load the MonetDB VOC tutorial|
 |  mylist.c    |illustrates how to create table in :memory: backup and re-use|
 |  duckdb.c  |a comparison with another embedded database|
 
