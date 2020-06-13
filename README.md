@@ -10,7 +10,7 @@ daily life, we collected a handful of examples to try it out.
 
 | program | description|
 | ------------- | ----------------------------------------------------------- |
-| helloword.c  |just start an :inmemory: database and execute a minimal query|
+| helloword.c  |just start/stop an :inmemory: database |
 |  helloall.c    |illustrates the same, but switching between different databases|
 |  voc.c |a more extensive example to load the MonetDB VOC tutorial|
 |  mylist.c    |illustrates how to create table in :memory: backup and re-use|
