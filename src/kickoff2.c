@@ -52,24 +52,19 @@ main(void)
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	for (int64_t r = 0; r < result->nrows; r++) {
 		for (size_t c = 0; c < result->ncols; c++) {
+			if ( monetdbe_isnull(result,c,r)) {
+				printf("NULL");
+				continue;
+			}
 			switch (result->header[c]->type) {
-				case monetdbe_int32_t: {
-					if (result->data[c][r] == col->null_value) 
-						printf("NULL");
-					else
-						printf("%d", result->data[c][r]);
+			case monetdbe_int32_t:
+					printf("%d", result->data[c][r]);
 					break;
-				}
-				case monetdbe_str: {
-					if ( monetdbe_is_null_str(result->data[x][r]))
-						printf("NULL");
-					else
-						printf("%s", (char*) result->data[c][r]);
+			case monetdbe_str:
+					printf("%s", (char*) result->data[c][r]);
 					break;
-				}
-				default: {
-					printf("UNKNOWN");
-				}
+			default: 
+				printf("UNKNOWN");
 			}
 
 			if (c + 1 < result->ncols) {
