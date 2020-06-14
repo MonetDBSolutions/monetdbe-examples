@@ -19,23 +19,19 @@
 #include <inttypes.h>
 
 #define error(msg) {fprintf(stderr, "Failure: %s\n", msg); exit -1;}
-monetdbe_connection conn = NULL;
+monetdbe_database mdbe = NULL;
 
 void startup(char *db)
 {
 	char* err = NULL;
-	if ((err = monetdbe_startup(db, 0)) != NULL)
-		error(err)
-	if ((err = monetdbe_connect(&conn)) != NULL)
+	if ((err = monetdbe_open(&mdbe, NULL)) != NULL)
 		error(err)
 }
 
 void shutdown(char *db)
 {
 	char* err = NULL;
-	if ((err = monetdbe_disconnect(conn)) != NULL)
-		error(err)
-	if ((err = monetdbe_shutdown()) != NULL)
+	if ((err = monetdbe_close(mdbe)) != NULL)
 		error(err)
 }
 

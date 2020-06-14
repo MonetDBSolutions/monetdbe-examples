@@ -25,7 +25,7 @@ main(void)
     monetdbe_database local = NULL, remote = NULL;
     monetdbe_result *data, *schema, *result;
 
-    monetdbe_open_remote('sf1', 'monetdb', 'monetdb', 'localhost',50000, &remote);  
+    monetdbe_open(&remote, "monetdb://localhost:5000/sf1?user=monetdb&password=monetdb");  
     monetdbe_query(remote, "call sys.describe(\"sys\",\"lineitem\"", &schema); 
     monetdbe_query(remote, "select line_no from sf1 where line_no < 10", &data);
     
@@ -35,7 +35,7 @@ main(void)
 	schemadef = (char*) schema->data[0][0];
 
     // store the result in an :inmemory: structure
-    monetdbe_open(NULL,0, &local);  
+    monetdbe_open(&local, NULL);  
     monetdbe_query(local, schemadef, &schema);
     monetdbe_append(local, "sys","lineitem", data, &result);
 

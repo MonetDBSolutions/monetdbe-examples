@@ -22,19 +22,15 @@ int
 main(void)
 {
 	char* err = NULL;
-	monetdbe_connection conn = NULL;
+	monetdbe_database mdbe = NULL;
 
-	// first argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_startup(NULL, 0)) != NULL)
-		error(err)
-	if ((err = monetdbe_connect(&conn)) != NULL)
+	// second argument is a string for the db directory or NULL for in-memory mode
+	if ((err = monetdbe_open(&mdbe, NULL)) != NULL)
 		error(err)
 
 	printf("hello world, we have a lift off\n MonetDBe has been started\n");
 
-	if ((err = monetdbe_disconnect(conn)) != NULL)
-		error(err)
-	if ((err = monetdbe_shutdown()) != NULL)
+	if ((err = monetdbe_close(mdbe)) != NULL)
 		error(err)
 
 	printf("hello world, we savely returned\n");

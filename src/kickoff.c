@@ -17,26 +17,24 @@ int
 main(void)
 {
 	char* err = NULL;
-	monetdbe_connection conn = NULL;
+	monetdbe_database mdbe = NULL;
 	monetdbe_result* result = NULL;
 
-	// first argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_startup(NULL, 0)) != NULL)
+	// second argument is a string for the db directory or NULL for in-memory mode
+	if ((err = monetdbe_open(&mdbe, NULL)) != NULL)
 		error(err)
-	if ((err = monetdbe_connect(&conn)) != NULL)
+	if ((err = monetdbe_query(mdbe, "CREATE TABLE test (x integer, y string)", NULL, NULL)) != NULL)
 		error(err)
-	if ((err = monetdbe_query(conn, "CREATE TABLE test (x integer, y string)", NULL, NULL)) != NULL)
+	if ((err = monetdbe_query(mdbe, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL, NULL)) != NULL)
 		error(err)
-	if ((err = monetdbe_query(conn, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL, NULL)) != NULL)
-		error(err)
-	if ((err = monetdbe_query(conn, "SELECT x, y FROM test; ", &result, NULL)) != NULL)
+	if ((err = monetdbe_query(mdbe, "SELECT x, y FROM test; ", &result, NULL)) != NULL)
 		error(err)
 
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	for (int64_t r = 0; r < result->nrows; r++) {
 		for (size_t c = 0; c < result->ncols; c++) {
 			monetdbe_column* rcol;
-			if ((err = monetdbe_result_fetch(conn, result, &rcol, c)) != NULL)
+			if ((err = monetdbe_result_fetch(mdbe, result, &rcol, c)) != NULL)
 				error(err)
 			switch (rcol->type) {
 				case monetdbe_int32_t: {
@@ -69,11 +67,9 @@ main(void)
 		printf("\n");
 	}
 
-	if ((err = monetdbe_cleanup_result(conn, result)) != NULL)
+	if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
 		error(err)
-	if ((err = monetdbe_disconnect(conn)) != NULL)
-		error(err)
-	if ((err = monetdbe_shutdown()) != NULL)
+	if ((err = monetdbe_close(mdbe)) != NULL)
 		error(err)
 	return 0;
 }

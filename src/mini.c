@@ -2,16 +2,11 @@
 #include <stdio.h>
 
 int main() {
-	//monetdbe_database db = NULL;
-	monetdbe_connection con = NULL;
+	monetdbe_database db = NULL;
 	monetdbe_result result;
 
 	if (monetdbe_open(NULL, &db) == DuckDBError) {
 		fprintf(stderr, "Failed to open database\n");
-		goto cleanup;
-	}
-	if (monetdbe_connect(db, &con) == DuckDBError) {
-		fprintf(stderr, "Failed to open connection\n");
 		goto cleanup;
 	}
 	if (monetdbe_query(con, "CREATE TABLE integers(i INTEGER, j INTEGER);", NULL) == DuckDBError) {
@@ -43,6 +38,5 @@ int main() {
 	// monetdbe_print_result(result);
 cleanup:
 	monetdbe_destroy_result(&result);
-	monetdbe_disconnect(&con);
 	monetdbe_close(&db);
 }

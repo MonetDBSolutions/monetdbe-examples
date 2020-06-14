@@ -27,24 +27,17 @@ main(void)
 {
 	char* err = NULL;
 	monetdbe_database  db = NULL;		// a reference
-	monetdbe_connection conn = NULL; 	// a reference
 	monetdbe_table result = NULL;		// a reference
 
-	// first argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_startup()) != NULL)
-		error("Could not initialize the database");
-
-	if ((err = monetdbe_open(NULL, &db)))
-		error(err)
-
-	if ((err = monetdbe_connect(&conn)))
+	// second argument is a string for the db directory or NULL for in-memory mode
+	if ((err = monetdbe_open(&db, NULL)))
 		error(err)
 
 	// ignore errors
-	monetdbe_query(conn, "CREATE TABLE test (x integer, y string)", NULL);
-	monetdbe_query(conn, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
+	monetdbe_query(db, "CREATE TABLE test (x integer, y string)", NULL);
+	monetdbe_query(db, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
 
-	monetdbe_query(conn, "SELECT x, y FROM test; ", &result);
+	monetdbe_query(db, "SELECT x, y FROM test; ", &result);
 
 	if( result->error)
 		error(result->error);
@@ -76,11 +69,7 @@ main(void)
 
 	if ((err = monetdbe_cleanup_result(result)) != NULL)
 		error(err)
-	if ((err = monetdbe_close(conn)) != NULL)
-		error(err)
-	if ((err = monetdbe_disconnect(db)) != NULL)
-		error(err)
-	if ((err = monetdbe_shutdown()) != NULL)
+	if ((err = monetdbe_close(db)) != NULL)
 		error(err)
 	return 0;
 }
