@@ -26,19 +26,21 @@ main(void)
     monetdbe_result *data, *schema, *result;
 
     monetdbe_open_remote('sf1', 'monetdb', 'monetdb', 'localhost',50000, &remote);  
-    monetdbe_query(remote, "call sys.describe(\"sys\",\"lineitem\"", &schema, NULL); 
-    monetdbe_query(remote, "select line_no from sf1 where line_no < 10", &result, NULL);
+    monetdbe_query(remote, "call sys.describe(\"sys\",\"lineitem\"", &schema); 
+    monetdbe_query(remote, "select line_no from sf1 where line_no < 10", &data);
     
-    if( remote->error || schema->error || result->error)
+    if( remote->error || schema->error || data->error)
         error("Could not access the remote database");
+	// query returns a single string
+	schemadef = (char*) schema->data[0][0];
 
-    // store the result in memory
+    // store the result in an :inmemory: structure
     monetdbe_open(NULL,0, &local);  
-    monetdbe_query(local, schemadef, &result, NULL);
-    monetdbe_append(local, data,"sys","lineitem", data);
+    monetdbe_query(local, schemadef, &schema);
+    monetdbe_append(local, "sys","lineitem", data, &result);
 
-    if( local->error )
+    if( local->error || schema->error || result->error )
         error("Construction of the local cache failed\n");
 
-    printf("Now we can work on a local snippet\n");
+	printf("Obtained %d tuples from the remote", result->affectedrows);
 }
