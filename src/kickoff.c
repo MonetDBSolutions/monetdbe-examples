@@ -6,7 +6,7 @@
  * (c) 2020- MonetDB Solutions B.V.
  */
 
-#include "monetdb_embedded.h"
+#include "monetdbe.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -17,30 +17,30 @@ int
 main(void)
 {
 	char* err = NULL;
-	monetdb_connection conn = NULL;
-	monetdb_result* result = NULL;
+	monetdbe_connection conn = NULL;
+	monetdbe_result* result = NULL;
 
 	// first argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdb_startup(NULL, 0)) != NULL)
+	if ((err = monetdbe_startup(NULL, 0)) != NULL)
 		error(err)
-	if ((err = monetdb_connect(&conn)) != NULL)
+	if ((err = monetdbe_connect(&conn)) != NULL)
 		error(err)
-	if ((err = monetdb_query(conn, "CREATE TABLE test (x integer, y string)", NULL, NULL)) != NULL)
+	if ((err = monetdbe_query(conn, "CREATE TABLE test (x integer, y string)", NULL, NULL)) != NULL)
 		error(err)
-	if ((err = monetdb_query(conn, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL, NULL)) != NULL)
+	if ((err = monetdbe_query(conn, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL, NULL)) != NULL)
 		error(err)
-	if ((err = monetdb_query(conn, "SELECT x, y FROM test; ", &result, NULL)) != NULL)
+	if ((err = monetdbe_query(conn, "SELECT x, y FROM test; ", &result, NULL)) != NULL)
 		error(err)
 
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	for (int64_t r = 0; r < result->nrows; r++) {
 		for (size_t c = 0; c < result->ncols; c++) {
-			monetdb_column* rcol;
-			if ((err = monetdb_result_fetch(conn, result, &rcol, c)) != NULL)
+			monetdbe_column* rcol;
+			if ((err = monetdbe_result_fetch(conn, result, &rcol, c)) != NULL)
 				error(err)
 			switch (rcol->type) {
-				case monetdb_int32_t: {
-					monetdb_column_int32_t * col = (monetdb_column_int32_t *) rcol;
+				case monetdbe_int32_t: {
+					monetdbe_column_int32_t * col = (monetdbe_column_int32_t *) rcol;
 					if (col->data[r] == col->null_value) {
 						printf("NULL");
 					} else {
@@ -48,8 +48,8 @@ main(void)
 					}
 					break;
 				}
-				case monetdb_str: {
-					monetdb_column_str * col = (monetdb_column_str *) rcol;
+				case monetdbe_str: {
+					monetdbe_column_str * col = (monetdbe_column_str *) rcol;
 					if (col->is_null(col->data[r])) {
 						printf("NULL");
 					} else {
@@ -69,11 +69,11 @@ main(void)
 		printf("\n");
 	}
 
-	if ((err = monetdb_cleanup_result(conn, result)) != NULL)
+	if ((err = monetdbe_cleanup_result(conn, result)) != NULL)
 		error(err)
-	if ((err = monetdb_disconnect(conn)) != NULL)
+	if ((err = monetdbe_disconnect(conn)) != NULL)
 		error(err)
-	if ((err = monetdb_shutdown()) != NULL)
+	if ((err = monetdbe_shutdown()) != NULL)
 		error(err)
 	return 0;
 }

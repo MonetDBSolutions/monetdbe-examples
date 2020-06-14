@@ -11,9 +11,11 @@ daily life, we collected a handful of examples to try it out.
 | program | description|
 | ------------- | ----------------------------------------------------------- |
 | helloworld.c  |just start/stop an :inmemory: database |
-| helloall.c    |illustrates the same, but switching between different databases|
+| tumble.c    |illustrates the same, but switching between different databases|
 | kickoff.c    |the kickoff example to test part of the api|
+| kickoff2.c    |the kickoff example to test part of the api|
 | mini.c  |a simple application framework |
+| cache.c  |a simple caching database application |
 | voc.c |a more extensive example based on the MonetDB VOC tutorial|
 
 Feel free to propose other tiny examples that help users to explore the system.

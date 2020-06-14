@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main() {
-	monetdbe_database db = NULL;
+	//monetdbe_database db = NULL;
 	monetdbe_connection con = NULL;
 	monetdbe_result result;
 

@@ -13,29 +13,29 @@
  * For an explanation of the command arguments see ...
  */
 
-#include "monetdb_embedded.h"
+#include "monetdbe.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
 
 #define error(msg) {fprintf(stderr, "Failure: %s\n", msg); exit -1;}
-monetdb_connection conn = NULL;
+monetdbe_connection conn = NULL;
 
 void startup(char *db)
 {
 	char* err = NULL;
-	if ((err = monetdb_startup(db, 0)) != NULL)
+	if ((err = monetdbe_startup(db, 0)) != NULL)
 		error(err)
-	if ((err = monetdb_connect(&conn)) != NULL)
+	if ((err = monetdbe_connect(&conn)) != NULL)
 		error(err)
 }
 
 void shutdown(char *db)
 {
 	char* err = NULL;
-	if ((err = monetdb_disconnect(conn)) != NULL)
+	if ((err = monetdbe_disconnect(conn)) != NULL)
 		error(err)
-	if ((err = monetdb_shutdown()) != NULL)
+	if ((err = monetdbe_shutdown()) != NULL)
 		error(err)
 }
 
@@ -45,9 +45,11 @@ main(void)
 	printf("hello all, startup your first database\n");
 	startup(NULL);
 	shutdown(NULL);
+
 	printf("closed it\n, try a persistent one");
-	startup("./_monetdbe_db_");
+	startup("./_local_");
 	shutdown();
+
 	printf("that was all for today\n");
 	return 0;
 }

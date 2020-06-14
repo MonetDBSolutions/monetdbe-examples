@@ -11,7 +11,7 @@
  * For an explanation of the command arguments see ...
  */
 
-#include "monetdb_embedded.h"
+#include "monetdbe.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
@@ -22,19 +22,19 @@ int
 main(void)
 {
 	char* err = NULL;
-	monetdb_connection conn = NULL;
+	monetdbe_connection conn = NULL;
 
 	// first argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdb_startup(NULL, 0)) != NULL)
+	if ((err = monetdbe_startup(NULL, 0)) != NULL)
 		error(err)
-	if ((err = monetdb_connect(&conn)) != NULL)
+	if ((err = monetdbe_connect(&conn)) != NULL)
 		error(err)
 
 	printf("hello world, we have a lift off\n MonetDBe has been started\n");
 
-	if ((err = monetdb_disconnect(conn)) != NULL)
+	if ((err = monetdbe_disconnect(conn)) != NULL)
 		error(err)
-	if ((err = monetdb_shutdown()) != NULL)
+	if ((err = monetdbe_shutdown()) != NULL)
 		error(err)
 
 	printf("hello world, we savely returned\n");
