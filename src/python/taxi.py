@@ -10,6 +10,7 @@
 """
 import monetdbe
 import time
+import sys
 
 conn = monetdbe.connect(':memory:')
 if not conn:
@@ -45,12 +46,12 @@ def createdb():
     cursor.close()
     print("Create database %6.3f milliseconds"  %(time.time() - clk))
 
-def loaddb():
+def loaddb(dir):
     clk = time.time()
     cursor = conn.cursor()
     cursor.execute("""
-    COPY OFFSET 2 INTO yellow_tripdata_2016_01 FROM '/ufs/mk/repository/monetdbe-examples/data/yellow_tripdata_2016-01.csv' delimiters ',','\n'  best effort
-    """)
+    COPY OFFSET 2 INTO yellow_tripdata_2016_01 FROM '%s/data/yellow_tripdata_2016-01.csv' delimiters ',','\n'  best effort
+    """ % dir)
     cursor.execute("SELECT count(*) FROM yellow_tripdata_2016_01")
     print(cursor.fetchone())
     cursor.close()
@@ -141,8 +142,9 @@ def regression():
     print("Regression %6.3f milliseconds"  %(time.time() - clk))
 
 if __name__ == "__main__":
+    print(sys.argv[1])
     createdb()
-    loaddb()
+    loaddb(sys.argv[1])
     distinct()
     frequency()
     regression()
