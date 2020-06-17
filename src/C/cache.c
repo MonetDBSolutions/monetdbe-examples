@@ -24,19 +24,27 @@ main(void)
 {
     monetdbe_database local = NULL, remote = NULL;
     monetdbe_result *data, *schema, *result;
+    monetdbe_column *schemas;
 
-    monetdbe_open(&remote, "monetdb://localhost:5000/sf1?user=monetdb&password=monetdb");  
+    monetdbe_open(&remote, "monetdb://localhost:5000/sf1?user=monetdb&password=monetdb", NULL);  
     monetdbe_query(remote, "call sys.describe(\"sys\",\"lineitem\"", &schema); 
     monetdbe_query(remote, "select line_no from sf1 where line_no < 10", &data);
     
-    if( remote->error || schema->error || data->error)
+    if (remote->error || schema->error || data->error) 
         error("Could not access the remote database");
-	// query returns a single string
-	schemadef = (char*) schema->data[0][0];
+
+    // query returns a single string
+    monetdb_result_fetch(schema, &schemas, 0);
+    schemadef = (char*) schemas->data[0];
+
+    monetdb_cleanup_result(remote, schema);
 
     // store the result in an :inmemory: structure
-    monetdbe_open(&local, NULL);  
+    monetdbe_open(&local, NULL, NULL);  
     monetdbe_query(local, schemadef, &schema);
+    monetdb_result_fetch(schema, &schemas, 0);
+
+    /* need to fetch the result first */
     monetdbe_append(local, "sys","lineitem", data, &result);
 
     if( local->error || schema->error || result->error )

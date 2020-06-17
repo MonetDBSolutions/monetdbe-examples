@@ -25,7 +25,7 @@ main(void)
 	monetdbe_database mdbe = NULL;
 
 	// second argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_open(&mdbe, NULL)) != NULL)
+	if ((err = monetdbe_open(&mdbe, NULL, NULL)) != NULL)
 		error(err)
 
 	printf("hello world, we have a lift off\n MonetDBe has been started\n");
