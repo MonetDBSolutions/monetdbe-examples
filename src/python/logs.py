@@ -44,11 +44,7 @@ def load(conn):
         assert os.path.exists(csv)
     except:
        raise SystemExit('Error: bench1.csv missing! Run mgbench1.sh in {}/data'.format(root_dir))
-    # 1000000 records produce 
-    #main thread: GDKfdlocate: !ERROR: no name specified
-    #main thread: GDKsave: !ERROR: failed name=, ext=tail, mode 0
-    # !FATAL: COMMIT: transaction commit failed (perhaps your disk is full?) exiting (kernel error: (null))
-    sql= """COPY 100000 OFFSET 2 RECORDS INTO logs FROM '{}' USING DELIMITERS ',' NULL AS ''""".format(csv)
+    sql= """COPY 1000000 OFFSET 2 RECORDS INTO logs FROM '{}' USING DELIMITERS ',' NULL AS ''""".format(csv)
     conn.execute(ddl)
     conn.execute(sql)
 
@@ -82,6 +78,7 @@ def run_query(conn: monetdbe.Connection):
 
 def dump(conn):
     pass
+
 
 if __name__ == "__main__":
     conn=None
