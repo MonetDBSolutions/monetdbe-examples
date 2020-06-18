@@ -12,3 +12,9 @@ target_link_libraries(kickoff
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
 add_test(run_kickoff kickoff)
+add_executable(logs logs.c)
+target_link_libraries(logs
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_logs logs)
