@@ -47,6 +47,7 @@ def load(conn):
     sql= """COPY 1000000 OFFSET 2 RECORDS INTO logs FROM '{}' USING DELIMITERS ',' NULL AS ''""".format(csv)
     conn.execute(ddl)
     conn.execute(sql)
+    print('[OK] load')
 
 def run_query(conn: monetdbe.Connection):
     sql = """
@@ -74,12 +75,10 @@ def run_query(conn: monetdbe.Connection):
     curr = conn.cursor()
     curr.execute(sql)
     res = curr.fetchall()
-    print(res)
+    print('[OK] query\n', res)
 
-def dump(conn):
-    # How to execute dump from python interface?
-    pass
-
+def dump(conn: monetdbe.Connection):
+    conn.lowlevel.dump_database('/tmp/logs_dump')
 
 if __name__ == "__main__":
     conn=None
@@ -87,6 +86,7 @@ if __name__ == "__main__":
         conn = monetdbe.connect(':memory:')
         load(conn)
         run_query(conn)
+        dump(conn)
         print('Done')
     except Exception as e:
         raise SystemExit(e)
