@@ -4,7 +4,7 @@
 import monetdbe
 import os
 
-database = 'test.sqlite'
+database = 'test.mdbe'
 
 # Removes the database if it already exists
 if os.path.exists(database):
