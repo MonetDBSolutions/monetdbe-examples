@@ -1,4 +1,4 @@
-pip install monetdbe
+import monetdbe
 
 if __name__ == "__main__":
     conn = monetdbe.connect(':memory:')
@@ -19,13 +19,13 @@ if __name__ == "__main__":
         print(r)
 
     # retrieve the rows explicitly
-    for r in c.fetchrows():
-        print(r)
+    # TODO for r in c.fetchrows():
+    #   print(r)
 
     # alternative interface
-    for i in range(c.nrofrows):
-        for col in c.fetchcolumns():
-            print(col[r])
+    # for i in range(c.nrofrows):
+    #   for col in c.fetchcolumns():
+    #       print(col[r])
     
     c.close()
     conn.close()

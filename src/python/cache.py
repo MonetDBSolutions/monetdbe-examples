@@ -13,6 +13,8 @@
 import monetdbe
 
 if __name__ == "__main__":
+    print('This experiment is on hold until we support remote connections')
+    
     try:
         remote = monetdbe.connect("monetdb://localhost:5000/sf1?user=monetdb&password=monetdb")
         curr = remote.cursor()
@@ -37,5 +39,5 @@ if __name__ == "__main__":
 
         print(f"Obtained {1} tuples from the remote")
 
-    except DatabaseError as msg:
+    except monetdbe.exceptions.OperationalError as msg:
         print(f"Error encountered {msg}")
