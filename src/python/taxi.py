@@ -7,6 +7,7 @@
 
  This example is based on the blog post of Uwe Korn https://uwekorn.com/2019/10/19/taking-duckdb-for-a-spin.html
 
+program should be called with `pwd`/../.. from the source directory
 """
 import monetdbe
 import time
