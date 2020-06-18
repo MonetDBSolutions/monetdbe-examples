@@ -38,11 +38,11 @@ main(void)
     fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
 		error(err)
-    
-    int* ac = NULL; 
+    int autocommit;
+    int* ac = &autocommit; 
 	if ((err = monetdbe_get_autocommit(mdbe, (int*)ac)) != NULL)
 		error(err)
-    fprintf(stdout, "autocommit is %d!", *ac);
+    fprintf(stdout, "autocommit is %d!\n", autocommit);
     
     // testing dump
 	if ((err = monetdbe_dump_database(mdbe, "/tmp/logs_dump")) != NULL)

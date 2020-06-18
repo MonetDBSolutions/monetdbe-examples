@@ -77,6 +77,7 @@ def run_query(conn: monetdbe.Connection):
     print(res)
 
 def dump(conn):
+    # How to execute dump from python interface?
     pass
 
 
