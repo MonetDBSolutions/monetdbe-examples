@@ -67,22 +67,15 @@ main(int argc, char **argv)
 	monetdbe_database mdbe = NULL;
 	monetdbe_result* result = NULL;
     
-    char cwd[PATH_MAX];
-    char csv_path[PATH_MAX];
-    char buf[PATH_MAX];
-    char exec_dir_path[PATH_MAX];
-    char* p = argv[0];
-    p++;
-    getcwd(cwd, sizeof(cwd));
-    strcpy(buf, cwd);
-    strcat(buf, p);
-    strncpy(exec_dir_path, buf, strlen(buf) - 4);
-    strcpy(csv_path, exec_dir_path);
-    strcat(csv_path, "../../../data/bench1.csv");
+    if (argc < 2) {
+	    fprintf(stderr, "location of the benchmark fiel (bench1.csv) missing\n");
+	    return -1;
+    }
+    char* csv_path = argv[1];
 
-	// second argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_open(&mdbe, NULL, NULL)) != NULL)
-		error(err)
+    // second argument is a string for the db directory or NULL for in-memory mode
+    if ((err = monetdbe_open(&mdbe, NULL, NULL)) != NULL)
+	error(err)
     
     if ((err=load(mdbe, csv_path)) != NULL)
         error(err)
