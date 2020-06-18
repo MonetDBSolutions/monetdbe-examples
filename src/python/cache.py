@@ -37,5 +37,5 @@ if __name__ == "__main__":
 
         print(f"Obtained {1} tuples from the remote")
 
-    except DatabaseError as msg:
+    except monetdbe.exceptions.OperationalError as msg:
         print(f"Error encountered {msg}")
