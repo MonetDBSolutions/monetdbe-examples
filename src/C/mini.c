@@ -5,9 +5,9 @@ int main() {
 	monetdbe_database db = NULL;
 	monetdbe_result result;
 
-	if (monetdbe_open(NULL, &db) == DuckDBError) {
+	if (monetdbe_open(&db) ) {
 		fprintf(stderr, "Failed to open database\n");
-		goto cleanup;
+		return -1;
 	}
 	if (monetdbe_query(con, "CREATE TABLE integers(i INTEGER, j INTEGER);", NULL) == DuckDBError) {
 		fprintf(stderr, "Failed to query database\n");
@@ -38,5 +38,6 @@ int main() {
 	// monetdbe_print_result(result);
 cleanup:
 	monetdbe_destroy_result(&result);
-	monetdbe_close(&db);
+	if( monetdbe_close(&db))
+		printf("Could not close the database");;
 }

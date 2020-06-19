@@ -30,13 +30,12 @@ main(void)
 	monetdbe_table result = NULL;		// a reference
 
 	// second argument is a string for the db directory or NULL for in-memory mode
-	if ((err = monetdbe_open(&db, NULL)))
-		error(err)
+	if (monetdbe_open(NULL))
+		error("Can not open database"))
 
 	// ignore errors
 	monetdbe_query(db, "CREATE TABLE test (x integer, y string)", NULL);
 	monetdbe_query(db, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
-
 	monetdbe_query(db, "SELECT x, y FROM test; ", &result);
 
 	if( result->error)
@@ -69,7 +68,6 @@ main(void)
 
 	if ((err = monetdbe_cleanup_result(result)) != NULL)
 		error(err)
-	if ((err = monetdbe_close(db)) != NULL)
-		error(err)
-	return 0;
+	if (monetdbe_close(db)) 
+		error("Could not close database")
 }

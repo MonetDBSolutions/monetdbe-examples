@@ -74,8 +74,8 @@ main(int argc, char **argv)
     char* csv_path = argv[1];
 
     // second argument is a string for the db directory or NULL for in-memory mode
-    if ((err = monetdbe_open(&mdbe, NULL, NULL)) != NULL)
-	error(err)
+    if (monetdbe_open(&mdbe)) 
+		error("Could not open the database");
     
     if ((err=load(mdbe, csv_path)) != NULL)
         error(err)
@@ -118,7 +118,6 @@ main(int argc, char **argv)
 	if ((err = monetdbe_dump_database(mdbe, "/tmp/logs_dump")) != NULL)
 		error(err)
 	
-    if ((err = monetdbe_close(mdbe)) != NULL)
-		error(err)
-	return 0;
+    if (monetdbe_close(mdbe)) 
+		error("Cannot close the database");
 }
