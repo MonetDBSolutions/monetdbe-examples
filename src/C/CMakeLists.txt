@@ -27,6 +27,13 @@ target_link_libraries(mini
     MonetDB::monetdbe)
 add_test(run_mini mini)
 
+add_executable(tumble tumble.c)
+target_link_libraries(tumble
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_tumble tumble)
+
 add_executable(logs logs.c)
 target_link_libraries(logs
   PRIVATE

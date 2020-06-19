@@ -9,7 +9,7 @@ int main() {
 
 	if (monetdbe_open(&db, NULL /* inmemory database */, NULL /* no options */)) {
 		fprintf(stderr, "Failed to open database\n");
-		goto cleanup;
+		return -1;
 	}
 	if (monetdbe_query(db, "CREATE TABLE integers(i INTEGER, j INTEGER);", NULL, NULL) != NULL) {
 		fprintf(stderr, "Failed to query database\n");

@@ -26,11 +26,11 @@ main(void)
     monetdbe_result *data, *schema, *result;
     monetdbe_column *schemas;
 
-    monetdbe_open(&remote, "monetdb://localhost:5000/sf1?user=monetdb&password=monetdb", NULL);  
+    monetdbe_open(&remote, "monetdb://localhost:5000/sf1?user=monetdb&password=monetdb");  
     monetdbe_query(remote, "call sys.describe(\"sys\",\"lineitem\"", &schema); 
     monetdbe_query(remote, "select line_no from sf1 where line_no < 10", &data);
     
-    if (remote->error || schema->error || data->error) 
+    if (remote == NULL ) 
         error("Could not access the remote database");
 
     // query returns a single string
@@ -48,7 +48,7 @@ main(void)
     monetdbe_append(local, "sys","lineitem", data, &result);
 
     if( local->error || schema->error || result->error )
-        error("Construction of the local cache failed\n");
+        error("Construction of the local cache failed");
 
 	printf("Obtained %d tuples from the remote", result->affectedrows);
 }

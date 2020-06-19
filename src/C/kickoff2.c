@@ -36,7 +36,6 @@ main(void)
 	// ignore errors
 	monetdbe_query(db, "CREATE TABLE test (x integer, y string)", NULL);
 	monetdbe_query(db, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
-
 	monetdbe_query(db, "SELECT x, y FROM test; ", &result);
 
 	if (result->error)
@@ -67,7 +66,6 @@ main(void)
 		printf("\n");
 	}
 
-	if (monetdbe_cleanup_result(result)) != NULL)
 		error(err)
 	if (monetdbe_close(db))
 		error("Failed to close database")

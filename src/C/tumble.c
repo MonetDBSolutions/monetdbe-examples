@@ -23,11 +23,11 @@ monetdbe_database mdbe = NULL;
 
 void startup(char *db)
 {
-	if (monetdbe_open(&mdbe, NULL))
+	if (monetdbe_open(&mdbe, NULL, NULL))
 		error("Failed to open database")
 }
 
-void shutdown(char *db)
+void shutdown()
 {
 	if (monetdbe_close(mdbe))
 		error("Failed to close database")
@@ -38,7 +38,7 @@ main(void)
 {
 	printf("hello all, startup your first database\n");
 	startup(NULL);
-	shutdown(NULL);
+	shutdown();
 
 	printf("closed it\n, try a persistent one");
 	startup("./_local_");
