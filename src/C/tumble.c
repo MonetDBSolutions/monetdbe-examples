@@ -23,16 +23,14 @@ monetdbe_database mdbe = NULL;
 
 void startup(char *db)
 {
-	char* err = NULL;
-	if ((err = monetdbe_open(&mdbe, NULL)) != NULL)
-		error(err)
+	if (monetdbe_open(&mdbe, NULL))
+		error("Failed to open database")
 }
 
 void shutdown(char *db)
 {
-	char* err = NULL;
-	if ((err = monetdbe_close(mdbe)) != NULL)
-		error(err)
+	if (monetdbe_close(mdbe))
+		error("Failed to close database")
 }
 
 int
