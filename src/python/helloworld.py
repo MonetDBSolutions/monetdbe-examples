@@ -12,7 +12,6 @@
 """
 import monetdbe
 
-
 if __name__ == "__main__":
     conn = monetdbe.connect(':memory:')
     if not conn:

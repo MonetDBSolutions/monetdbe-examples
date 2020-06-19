@@ -15,12 +15,14 @@ The repository comes with two flavors or mirrored implementation
 | program | description|
 | ------------- | ----------------------------------------------------------- |
 | helloworld.{c.py}  |just start/stop an :inmemory: database |
-| tumble.{c.py}    |illustrates the same, but switching between different databases|
+| tumble.c    |illustrates the same, but switching between different databases|
 | kickoff.{c.py}    |the kickoff example to test part of the api|
-| kickoff2.{c.py}    |the kickoff example to test part of the api|
 | mini.{c.py}  |a simple application framework |
 | cache.{c.py}  |a simple caching database application |
+| people.py |an example based on a people  database |
+| movies.py |an example based on a movie  database |
 | voc.{c.py} |a more extensive example based on the MonetDB VOC tutorial|
+| tpch-sf1.py |the prototypical TPCH scale-factor 1 data warehouse|
 
 Feel free to propose other tiny examples that help users to explore the system.
 

@@ -3,6 +3,12 @@
 
 #--------------------------------- FAILS
 import monetdbe
+import os
+
+# Removes the database if it already exists
+if os.path.exists('example.db'):
+    os.system('rm -rf example.db')
+
 conn = monetdbe.connect('example.db')
 c = conn.cursor()
 
@@ -49,31 +55,31 @@ conn.close()
 
 #------------------------------------ FAILS
 con = monetdbe.connect(":memory:")
-con.isolation_level = None
-cur = con.cursor()
-
-buffer = ""
-
-print("Enter your SQL commands to execute in monetdbe.")
-print("Enter a blank line to exit.")
-
-while True:
-    line = input()
-    if line == "":
-        break
-    buffer += line
-    if monetdbe.complete_statement(buffer):
-        try:
-            buffer = buffer.strip()
-            cur.execute(buffer)
-
-            if buffer.lstrip().upper().startswith("SELECT"):
-                print(cur.fetchall())
-        except monetdbe.Error as e:
-            print("An error occurred:", e.args[0])
-        buffer = ""
-
-con.close()
+# con.isolation_level = None
+# cur = con.cursor()
+# 
+# buffer = ""
+# 
+# print("Enter your SQL commands to execute in monetdbe.")
+# print("Enter a blank line to exit.")
+# 
+# while True:
+#     line = input()
+#     if line == "":
+#         break
+#     buffer += line
+#     if monetdbe.complete_statement(buffer):
+#         try:
+#             buffer = buffer.strip()
+#             cur.execute(buffer)
+# 
+#             if buffer.lstrip().upper().startswith("SELECT"):
+#                 print(cur.fetchall())
+#         except monetdbe.Error as e:
+#             print("An error occurred:", e.args[0])
+#         buffer = ""
+# 
+# con.close()
 
 #--------------------------------
 import hashlib
