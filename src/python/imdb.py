@@ -19,7 +19,7 @@ conn = None
 imdb_tables = []
 imdb_ddl = []
 imdb_queries = []
-datapathprefix = "../../third_party/imdb"
+datapathprefix = "../../third_party/imdb/"
 
 def createschema():
     f = open(datapathprefix  +  "imdb_tables_ddl","r")

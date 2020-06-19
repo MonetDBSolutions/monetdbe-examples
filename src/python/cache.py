@@ -37,7 +37,7 @@ if __name__ == "__main__":
             print("Construction of the local cache failed\n")
             exit (-1)
 
-        print(f"Obtained {1} tuples from the remote")
+        print("Obtained tuples from the remote")
 
     except monetdbe.exceptions.OperationalError as msg:
         print(f"Error encountered {msg}")
