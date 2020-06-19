@@ -499,9 +499,11 @@ def run_query(conn, idx, kind):
         return
     clk = time.time()
     curr = conn.cursor()
-    curr.execute(tasks[idx]['sql'])
+    result = curr.execute(tasks[idx]['sql'])
+    if not result:
+        print(f"Error encountered:{err}")
 
-    res = curr.fetchall()
+    res = result.fetchall()
     sec = "%6.3f" % (time.time() - clk)
     print(f"QUERY bench{tasks[idx]['bench']}.q{tasks[idx]['query']} {sec} sec {kind}")
 
