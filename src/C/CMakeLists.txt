@@ -12,6 +12,28 @@ target_link_libraries(kickoff
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
 add_test(run_kickoff kickoff)
+
+add_executable(helloworld helloworld.c)
+target_link_libraries(helloworld
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_helloworld helloworld)
+
+add_executable(mini mini.c)
+target_link_libraries(mini
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_mini mini)
+
+add_executable(tumble tumble.c)
+target_link_libraries(tumble
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_tumble tumble)
+
 add_executable(logs logs.c)
 target_link_libraries(logs
   PRIVATE

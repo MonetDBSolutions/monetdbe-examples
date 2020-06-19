@@ -21,16 +21,15 @@
 int
 main(void)
 {
-	char* err = NULL;
 	monetdbe_database mdbe = NULL;
 
 	// second argument is a string for the db directory or NULL for in-memory mode
-	if (monetdbe_open(&mdbe)) 
-		error("Failed to open the database");
+	if (monetdbe_open(&mdbe, NULL, NULL))
+		error("Failed to open database")
 
 	printf("hello world, we have a lift off\n MonetDBe has been started\n");
 
-	if (monetdbe_close(mdbe) )
+	if (monetdbe_close(mdbe))
 		error("Failed to close database")
 
 	printf("hello world, we savely returned\n");

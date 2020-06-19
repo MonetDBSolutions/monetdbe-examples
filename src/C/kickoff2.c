@@ -30,15 +30,15 @@ main(void)
 	monetdbe_table result = NULL;		// a reference
 
 	// second argument is a string for the db directory or NULL for in-memory mode
-	if (monetdbe_open(NULL))
-		error("Can not open database"))
+	if (monetdbe_open(&db, NULL))
+		error("Failed to open database")
 
 	// ignore errors
 	monetdbe_query(db, "CREATE TABLE test (x integer, y string)", NULL);
 	monetdbe_query(db, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
 	monetdbe_query(db, "SELECT x, y FROM test; ", &result);
 
-	if( result->error)
+	if (result->error)
 		error(result->error);
 
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
@@ -66,8 +66,8 @@ main(void)
 		printf("\n");
 	}
 
-	if ((err = monetdbe_cleanup_result(result)) != NULL)
 		error(err)
-	if (monetdbe_close(db)) 
-		error("Could not close database")
+	if (monetdbe_close(db))
+		error("Failed to close database")
+	return 0;
 }
