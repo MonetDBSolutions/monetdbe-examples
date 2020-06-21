@@ -1,15 +1,22 @@
-# This file contains the dump of the program snippets in the https://docs.python.org/3.8/library/monetdbe.html
-# It has been used as a scratchbook to assess the progress
+"""
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0.  If a copy of the MPL was not distributed with this
+ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ (c) 2020- MonetDB Solutions B.V.
+
+This file contains the snippets used in the Python/SQLite 3 code
+"""
 
 #--------------------------------- FAILS
 import monetdbe
 import os
 
 # Removes the database if it already exists
-if os.path.exists('example.db'):
-    os.system('rm -rf example.db')
+if os.path.exists('/tmp/example.mdbe'):
+    os.system('rm -rf /tmp/example.mdbe')
 
-conn = monetdbe.connect('example.db')
+conn = monetdbe.connect('/tmp/example.mdbe')
 c = conn.cursor()
 
 # Create table
@@ -30,7 +37,7 @@ except DatabaseError as msg:
 conn.close()
 
 #--------------------------------- FAILS
-conn = monetdbe.connect('example.db')
+conn = monetdbe.connect('/tmp/example.mdbe')
 c = conn.cursor()
 
 # Never do this -- insecure!

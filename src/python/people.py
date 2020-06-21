@@ -1,5 +1,14 @@
-# adapted from https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
-# this example re-connect to the database with each instruction. Conceptually that is not needed.
+"""
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0.  If a copy of the MPL was not distributed with this
+ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ (c) 2020- MonetDB Solutions B.V.
+
+this example is based on https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
+It illustrates some basic database interactions albeit with re-establishing a connection with database
+repeatedly.
+"""
 
 import monetdbe
 import os

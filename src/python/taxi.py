@@ -7,7 +7,7 @@
 
  This example is based on the blog post of Uwe Korn https://uwekorn.com/2019/10/19/taking-duckdb-for-a-spin.html
 
-program should be called with `pwd`/../.. from the source directory
+ program should be called with `pwd`/../.. from the source directory
 """
 import monetdbe
 import time
@@ -45,7 +45,7 @@ def createdb():
     ) 
     """)
     cursor.close()
-    print("Create database %6.3f milliseconds"  %(time.time() - clk))
+    print("Create database %6.3f seconds"  %(time.time() - clk))
 
 def loaddb(dir):
     clk = time.time()
@@ -56,7 +56,7 @@ def loaddb(dir):
     cursor.execute("SELECT count(*) FROM yellow_tripdata_2016_01")
     print(cursor.fetchone())
     cursor.close()
-    print("Load database %6.3f milliseconds"  %(time.time() - clk))
+    print("Load database %6.3f seconds"  %(time.time() - clk))
 
 def distinct():
     clk = time.time()
@@ -88,7 +88,7 @@ def distinct():
     
     print(cursor.fetchdf())
     cursor.close()
-    print("Distinct %6.3f milliseconds"  %(time.time() - clk))
+    print("Distinct %6.3f seconds"  %(time.time() - clk))
 
 def frequency():
     clk = time.time()
@@ -111,7 +111,7 @@ def frequency():
     """)
     print(cursor.fetchdf())
     cursor.close()
-    print("Frequency %6.3f milliseconds"  %(time.time() - clk))
+    print("Frequency %6.3f seconds"  %(time.time() - clk))
     
 def regression():
     clk = time.time()
@@ -140,7 +140,7 @@ def regression():
     alpha = avg_fare_amount - beta * avg_trip_distance
     print(alpha)
     cursor.close()
-    print("Regression %6.3f milliseconds"  %(time.time() - clk))
+    print("Regression %6.3f seconds"  %(time.time() - clk))
 
 if __name__ == "__main__":
     print(sys.argv[1])

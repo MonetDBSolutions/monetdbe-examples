@@ -5,6 +5,7 @@
 
  (c) 2020- MonetDB Solutions B.V.
 
+this example is based on https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
 This program is intended to load the imdb database sample 
 The DDL contains reserved words that need to be quoted.
 Awaiting the auto-quoting option in monetdbe-python

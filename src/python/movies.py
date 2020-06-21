@@ -1,11 +1,22 @@
-# adapted from https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
-# this example re-connect to the database with each instruction. Conceptually that is not needed.
-# use SERIAL instead of INTEGER PRIMARY KEY AUTOINCREMENT
+"""
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0.  If a copy of the MPL was not distributed with this
+ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ (c) 2020- MonetDB Solutions B.V.
+
+ An embedded application can act a cache with a remote server.
+ For this we need two database objects, one :memory: and an URL link to the remote.
+
+ For an explanation of the command arguments see MonetDBe/Python documentation
+
+adapted from https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
+"""
 
 import monetdbe
 import os
 
-database = 'movie_ratings.mdbe'
+database = '/tmp/movies.mdbe'
 
 # Removes the database if it already exists
 if os.path.exists(database):

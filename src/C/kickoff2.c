@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * (c) 2020- MonetDB Solutions B.V.
+ *
  * This version of kickoff has been written to exercise the more enhanced result structure
  * references as a monetdbe_table structure
  * typedef struct {
@@ -38,8 +39,8 @@ main(void)
 	monetdbe_query(db, "INSERT INTO test VALUES (42, 'Hello'), (NULL, 'World')", NULL);
 	monetdbe_query(db, "SELECT x, y FROM test; ", &result);
 
-	if (result->error)
-		error(result->error);
+	if (monetdbe_error(db))
+		error(monetdbe_error(db));
 
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	for (int64_t r = 0; r < result->nrows; r++) {
