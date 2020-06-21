@@ -21,7 +21,7 @@ daily life, we collected a handful of small examples to try it out.
 | tpch-sf1.py |the prototypical TPCH scale-factor 1 data warehouse|
 | taxi.py |the NYC taxi example  |
 | mgbench.py | A machine generated database benchmark |
-} logs.c | a snippet of the inhouse qa database |
+| logs.c | a snippet of the inhouse qa database |
 | cache.{c.py}  |a simple caching database application |
 | myserver.c | a minimalistic database server setup |
 
