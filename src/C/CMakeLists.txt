@@ -20,13 +20,6 @@ target_link_libraries(helloworld
     MonetDB::monetdbe)
 add_test(run_helloworld helloworld)
 
-add_executable(mini mini.c)
-target_link_libraries(mini
-  PRIVATE
-    MonetDB::monetdb_config_header
-    MonetDB::monetdbe)
-add_test(run_mini mini)
-
 add_executable(tumble tumble.c)
 target_link_libraries(tumble
   PRIVATE

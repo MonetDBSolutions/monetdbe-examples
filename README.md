@@ -40,7 +40,7 @@ The snippet to create MonetDB after downloading the sources and from its root di
 git clone https://github.com/MonetDB/MonetDB MonetDB
 cd MonetDB
 mkdir build && cd build
-CMAKE_PREFIX_PATH=/tmp/monetdb/include/cmake/ cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
