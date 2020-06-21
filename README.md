@@ -11,7 +11,7 @@ daily life, we collected a handful of small examples to try it out.
 
 | program | description|
 | ------------- | ----------------------------------------------------------- |
-| helloworld.{c.py}  |just start/stop an :inmemory: database |
+| helloworld.{c.py}  |just start/stop an :memory: database |
 | getstarted.{c.py}  |a simple application framework |
 | people.py |an educational example based on a people  database |
 | movies.py |an edcucational example based on a movie  database |
