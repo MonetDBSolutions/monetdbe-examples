@@ -1,9 +1,9 @@
 # monetdbe-examples
-A small collection of C programs to illustrate MonetDBe
+A small collection of C programs to illustrate MonetDBe.
 
 The MonetDB server code has been split into a separately useable single library
 for integration with a host language.
-The functionality offered encompases the complete server functionality, but using
+The functionality offered encompasses the complete server functionality, but using
 a directly loadable library libmonetdbe.so or 'pip install monetdbe'
 
 To illustrate the functionality, and give a bootstrep for users to use it in their
@@ -30,17 +30,19 @@ As a more extensive QA activity is ongoing, it may lead to smaller changes in th
 interfaces. Please report any issue with the code on stack-overflow.
 
 ## Installation
-The Python integration is simplified with the binary wheel, just pip install monetdbe.
+The Python integration is simplified with the binary wheel, just [pip install monetdbe](https://pypi.org/project/monetdbe/).
 
 For the time being, you need access to the monetdb repository to build the libmonetdbe.so.
 
-The one-liner to create MonetDB after downloading the sources and from its root directory:
+The snippet to create MonetDB after downloading the sources and from its root directory:
 
+```
 git clone https://github.com/MonetDB/MonetDB MonetDB
 cd MonetDB
 mkdir build && cd build
 CMAKE_PREFIX_PATH=/tmp/monetdb/include/cmake/ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
+```
 
 This results in the libmonetdbe.so library to be created and stored in [TODO TELL where]
 The location of this library should be made known in src/CMakeList.c [TODO TELL exactly where and how]
