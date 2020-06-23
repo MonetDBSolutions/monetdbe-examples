@@ -5,6 +5,7 @@
 #
 # Copyright 2020 MonetDB Solutions B.V.
 #]]
+add_subdirectory(tpch)
 
 add_executable(kickoff kickoff.c)
 target_link_libraries(kickoff
