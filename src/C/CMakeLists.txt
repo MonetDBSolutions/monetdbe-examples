@@ -5,7 +5,6 @@
 #
 # Copyright 2020 MonetDB Solutions B.V.
 #]]
-add_subdirectory(tpch)
 
 add_executable(kickoff kickoff.c)
 target_link_libraries(kickoff
@@ -34,3 +33,5 @@ target_link_libraries(logs
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
 add_test(run_logs logs)
+
+add_subdirectory(tpch)

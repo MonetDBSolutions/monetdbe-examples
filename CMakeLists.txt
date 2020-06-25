@@ -13,6 +13,6 @@ set(C_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
 
 find_package(MonetDB CONFIG REQUIRED)
-
-add_subdirectory(src)
+include_directories(third_party/dbgen/include)
 add_subdirectory(third_party)
+add_subdirectory(src)

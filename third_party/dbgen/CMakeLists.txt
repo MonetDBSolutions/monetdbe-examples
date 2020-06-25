@@ -13,13 +13,17 @@ add_definitions(-D_FILE_OFFSET_BITS=64
 
 set(CMAKE_BUILD_TYPE "Release")
 add_library(dbgen STATIC
-            bm_utils.c
             build.c
             dbgen.c
-            permute.c
+            bm_utils.c
             rnd.c
-            rng64.c
             speed_seed.c
-            text.c)
+            text.c
+            permute.c
+            rng64.c)
 
+target_link_libraries(dbgen
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
 set_property(TARGET dbgen PROPERTY C_STANDARD 99)

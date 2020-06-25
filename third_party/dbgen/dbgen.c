@@ -98,55 +98,20 @@ static int bTableSet = 0;
 *
 */
 
-/*
-* flat file print functions; used with -F(lat) option
-*/
-int pr_cust (customer_t * c, int mode);
-int pr_line (order_t * o, int mode);
-int pr_order (order_t * o, int mode);
-int pr_part (part_t * p, int mode);
-int pr_psupp (part_t * p, int mode);
-int pr_supp (supplier_t * s, int mode);
-int pr_order_line (order_t * o, int mode);
-int pr_part_psupp (part_t * p, int mode);
-int pr_nation (code_t * c, int mode);
-int pr_region (code_t * c, int mode);
-
-/*
-* seed generation functions; used with '-O s' option
-*/
-long sd_cust (int child, DSS_HUGE skip_count);
-long sd_line (int child, DSS_HUGE skip_count);
-long sd_order (int child, DSS_HUGE skip_count);
-long sd_part (int child, DSS_HUGE skip_count);
-long sd_psupp (int child, DSS_HUGE skip_count);
-long sd_supp (int child, DSS_HUGE skip_count);
-long sd_order_line (int child, DSS_HUGE skip_count);
-long sd_part_psupp (int child, DSS_HUGE skip_count);
-
-tdef tdefs[] =
-{
-	{"part.tbl", "part table", 200000,
-		pr_part, sd_part, PSUPP, 0},
-	{"partsupp.tbl", "partsupplier table", 200000,
-		pr_psupp, sd_psupp, NONE, 0},
-	{"supplier.tbl", "suppliers table", 10000,
-		pr_supp, sd_supp, NONE, 0},
-	{"customer.tbl", "customers table", 150000,
-		pr_cust, sd_cust, NONE, 0},
-	{"orders.tbl", "order table", 150000,
-		pr_order, sd_order, LINE, 0},
-	{"lineitem.tbl", "lineitem table", 150000,
-		pr_line, sd_line, NONE, 0},
-	{"orders.tbl", "orders/lineitem tables", 150000,
-		pr_order_line, sd_order, LINE, 0},
-	{"part.tbl", "part/partsupplier tables", 200000,
-		pr_part_psupp, sd_part, PSUPP, 0},
-	{"nation.tbl", "nation table", NATIONS_MAX,
-		pr_nation, NO_LFUNC, NONE, 0},
-	{"region.tbl", "region table", NATIONS_MAX,
-		pr_region, NO_LFUNC, NONE, 0},
+//monetdbe_export char* monetdbe_append(monetdbe_database dbhdl, const char* schema, const char* table, monetdbe_column **input, size_t column_count);
+tdef tdefs[] = {
+    {"part.tbl", "part table", 200000, NULL, NULL, PSUPP, 0},
+    {"partsupp.tbl", "partsupplier table", 200000, NULL, NULL, NONE, 0},
+    {"supplier.tbl", "suppliers table", 10000, NULL, NULL, NONE, 0},
+    {"customer.tbl", "customers table", 150000, NULL, NULL, NONE, 0},
+    {"orders.tbl", "order table", 150000, NULL, NULL, LINE, 0},
+    {"lineitem.tbl", "lineitem table", 150000, NULL, NULL, NONE, 0},
+    {"orders.tbl", "orders/lineitem tables", 150000, NULL, NULL, LINE, 0},
+    {"part.tbl", "part/partsupplier tables", 200000, NULL, NULL, PSUPP, 0},
+    {"nation.tbl", "nation table", NATIONS_MAX, NULL, NULL, NONE, 0},
+    {"region.tbl", "region table", NATIONS_MAX, NULL, NULL, NONE, 0},
 };
+
 
 /*
 * re-set default output file names 
@@ -360,7 +325,8 @@ partial (int tbl, int s)
 	       "r_comment VARCHAR(152) NOT NULL);"
 
 
-void dbgen(double sf, monetdbe_database mdbe, char* schema){
+char* dbgen(double sf, monetdbe_database mdbe, char* schema){
+    char* err= NULL;
     if((err=monetdbe_query(mdbe, REGION_SCHEMA("sys"), NULL, NULL)) != NULL)
         return err;
 }

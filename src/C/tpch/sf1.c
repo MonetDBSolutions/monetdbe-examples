@@ -31,7 +31,7 @@ main(int argc, char **argv)
 	    error("Failed to open database")
 
     // try load schema
-    dbgen(sf, mbde, "sys");
+    dbgen(sf, mdbe, "sys");
     
 
     if (monetdbe_close(mdbe))
