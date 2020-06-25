@@ -33,6 +33,37 @@ main(int argc, char **argv)
     // try load schema
     dbgen(sf, mdbe, "sys");
     
+	if ((err = monetdbe_query(mdbe, "select * from sys.region;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+	
+    if ((err = monetdbe_query(mdbe, "select * from sys.nation;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+	
+    if ((err = monetdbe_query(mdbe, "select * from sys.supplier;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+
+    if ((err = monetdbe_query(mdbe, "select * from sys.customer;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+
+    if ((err = monetdbe_query(mdbe, "select * from sys.part;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+
+    if ((err = monetdbe_query(mdbe, "select * from sys.partsupp;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    
+    if ((err = monetdbe_query(mdbe, "select * from sys.orders;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+
+    if ((err = monetdbe_query(mdbe, "select * from sys.lineitem;", &result, NULL)) != NULL)
+		error(err)
+    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
 
     if (monetdbe_close(mdbe))
 		error("Failed to close database")

@@ -324,12 +324,107 @@ partial (int tbl, int s)
 	       "r_name VARCHAR(25) NOT NULL,"\
 	       "r_comment VARCHAR(152) NOT NULL);"
 
+#define NATION_SCHEMA(schema) "CREATE TABLE "schema".nation"\
+	       " ("\
+	       "n_nationkey INT NOT NULL,"\
+	       "n_name VARCHAR(25) NOT NULL,"\
+	       "n_regionkey INT NOT NULL,"\
+	       "n_comment VARCHAR(152) NOT NULL);"
 
-char* dbgen(double sf, monetdbe_database mdbe, char* schema){
+#define SUPPLIER_SCHEMA(schema) "CREATE TABLE "schema".supplier"\
+	       " ("\
+	       "s_suppkey INT NOT NULL,"\
+	       "s_name VARCHAR(25) NOT NULL,"\
+	       "s_address VARCHAR(40) NOT NULL,"\
+	       "s_nationkey INT NOT NULL,"\
+	       "s_phone VARCHAR(15) NOT NULL,"\
+	       "s_acctbal DECIMAL(15,2) NOT NULL,"\
+	       "s_comment VARCHAR(101) NOT NULL);"
+
+#define CUSTOMER_SCHEMA(schema) "CREATE TABLE "schema".customer"\
+	       " ("\
+	       "c_custkey INT NOT NULL,"\
+	       "c_name VARCHAR(25) NOT NULL,"\
+	       "c_address VARCHAR(40) NOT NULL,"\
+	       "c_nationkey INT NOT NULL,"\
+	       "c_phone VARCHAR(15) NOT NULL,"\
+	       "c_acctbal DECIMAL(15,2) NOT NULL,"\
+	       "c_mktsegment VARCHAR(10) NOT NULL,"\
+	       "c_comment VARCHAR(117) NOT NULL);"
+
+#define PART_SCHEMA(schema) "CREATE TABLE "schema".part"\
+	       " ("\
+	       "p_partkey INT NOT NULL,"\
+	       "p_name VARCHAR(55) NOT NULL,"\
+	       "p_mfgr VARCHAR(25) NOT NULL,"\
+	       "p_brand VARCHAR(10) NOT NULL,"\
+	       "p_type VARCHAR(25) NOT NULL,"\
+	       "p_size INT NOT NULL,"\
+	       "p_container VARCHAR(10) NOT NULL,"\
+	       "p_retailprice DECIMAL(15,2) NOT NULL,"\
+	       "p_comment VARCHAR(23) NOT NULL);"
+
+
+#define PART_SUPP_SCHEMA(schema) "CREATE TABLE "schema".partsupp"\
+	       " ("\
+	       "ps_partkey INT NOT NULL,"\
+	       "ps_suppkey INT NOT NULL,"\
+	       "ps_availqty INT NOT NULL,"\
+	       "ps_supplycost DECIMAL(15,2) NOT NULL,"\
+	       "ps_comment VARCHAR(199) NOT NULL);"
+
+#define ORDERS_SCHEMA(schema) "CREATE TABLE "schema".orders"\
+	       " ("\
+	       "o_orderkey INT NOT NULL,"\
+	       "o_custkey INT NOT NULL,"\
+	       "o_orderstatus VARCHAR(1) NOT NULL,"\
+	       "o_totalprice DECIMAL(15,2) NOT NULL,"\
+	       "o_orderdate DATE NOT NULL,"\
+	       "o_orderpriority VARCHAR(15) NOT NULL,"\
+	       "o_clerk VARCHAR(15) NOT NULL,"\
+	       "o_shippriority INT NOT NULL,"\
+	       "o_comment VARCHAR(79) NOT NULL);"
+
+#define LINE_ITEM_SCHEMA(schema) "CREATE TABLE "schema".lineitem"\
+	       " ("\
+	       "l_orderkey INT NOT NULL,"\
+	       "l_partkey INT NOT NULL,"\
+	       "l_suppkey INT NOT NULL,"\
+	       "l_linenumber INT NOT NULL,"\
+	       "l_quantity INTEGER NOT NULL,"\
+	       "l_extendedprice DECIMAL(15,2) NOT NULL,"\
+	       "l_discount DECIMAL(15,2) NOT NULL,"\
+	       "l_tax DECIMAL(15,2) NOT NULL,"\
+	       "l_returnflag VARCHAR(1) NOT NULL,"\
+	       "l_linestatus VARCHAR(1) NOT NULL,"\
+	       "l_shipdate DATE NOT NULL,"\
+	       "l_commitdate DATE NOT NULL,"\
+	       "l_receiptdate DATE NOT NULL,"\
+	       "l_shipinstruct VARCHAR(25) NOT NULL,"\
+	       "l_shipmode VARCHAR(10) NOT NULL,"\
+	       "l_comment VARCHAR(44) NOT NULL)"
+
+char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     char* err= NULL;
     if((err=monetdbe_query(mdbe, REGION_SCHEMA("sys"), NULL, NULL)) != NULL)
         return err;
+    if((err=monetdbe_query(mdbe, NATION_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, SUPPLIER_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, CUSTOMER_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, PART_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, PART_SUPP_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, ORDERS_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    if((err=monetdbe_query(mdbe, LINE_ITEM_SCHEMA("sys"), NULL, NULL)) != NULL)
+        return err;
+    return NULL;
 }
+
 
 /*
 * MAIN
