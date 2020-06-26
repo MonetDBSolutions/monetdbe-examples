@@ -67,5 +67,7 @@ main(int argc, char **argv)
 
     if (monetdbe_close(mdbe))
 		error("Failed to close database")
+
+    printf("Done\n");
 	return 0;
 }

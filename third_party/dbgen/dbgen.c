@@ -50,7 +50,7 @@
 #include "dss.h"
 #include "dsstypes.h"
 #include "dbgen.h"
-
+#define debug(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
 /*
 * Function prototypes
@@ -409,7 +409,6 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
         return err;
     if((err=monetdbe_query(mdbe, LINE_ITEM_SCHEMA("sys"), NULL, NULL)) != NULL)
         return err;
-    
 	if (flt_scale == 0) {
 		// schema only
 		return NULL;
@@ -468,7 +467,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 	} else {
 		scale = (long)flt_scale;
 	}
-    printf("check -- %s", env_config (DIST_TAG, DIST_DFLT));
+
 	load_dists();
 	
     /* have to do this after init */
@@ -485,15 +484,15 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 	for (i = PART; i <= REGION; i++) {
 		if (table & (1 << i))
 		{
-            minrow = 1;
             if (i < NATION)
                 rowcnt = tdefs[i].base * scale;
             else
                 rowcnt = tdefs[i].base;
-            // gen_tbl ((int)i, minrow, rowcnt, upd_num);
+            printf("table -------------------%s\n", get_table_name(i));
+            printf("rowcount -------------------%d\n", rowcnt);
+            gen_tbl((int)i, rowcnt);
 		}
     }
-
 
     return NULL;
 }
