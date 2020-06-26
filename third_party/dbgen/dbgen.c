@@ -55,13 +55,7 @@
 /*
 * Function prototypes
 */
-void	kill_load (void);
-int		pload (int tbl);
-void	gen_tbl (int tnum, DSS_HUGE start, DSS_HUGE count, long upd_num);
-int		pr_drange (int tbl, DSS_HUGE min, DSS_HUGE cnt, long num);
-int		set_files (int t, int pload);
-int		partial (int, int);
-
+static void	gen_tbl (int tnum,  DSS_HUGE count);
 
 extern int optind, opterr;
 extern char *optarg;
@@ -71,11 +65,11 @@ double flt_scale;
 #if (defined(WIN32)&&!defined(_POSIX_))
 char *spawn_args[25];
 #endif
-#ifdef RNG_TEST
-extern seed_t Seed[];
-#endif
 static int bTableSet = 0;
 
+extern seed_t Seed[];
+seed_t seed_backup[MAX_STREAM + 1];
+static bool first_invocation = true;
 
 /*
 * general table descriptions. See dss.h for details on structure
@@ -114,47 +108,6 @@ tdef tdefs[] = {
 
 
 /*
-* re-set default output file names 
-*/
-int
-set_files (int i, int pload)
-{
-	char line[80], *new_name;
-	
-	if (table & (1 << i))
-child_table:
-	{
-		if (pload != -1)
-			sprintf (line, "%s.%d", tdefs[i].name, pload);
-		else
-		{
-			printf ("Enter new destination for %s data: ",
-				tdefs[i].name);
-			if (fgets (line, sizeof (line), stdin) == NULL)
-				return (-1);;
-			if ((new_name = strchr (line, '\n')) != NULL)
-				*new_name = '\0';
-			if ((int)strlen (line) == 0)
-				return (0);
-		}
-		new_name = (char *) malloc ((int)strlen (line) + 1);
-		MALLOC_CHECK (new_name);
-		strcpy (new_name, line);
-		tdefs[i].name = new_name;
-		if (tdefs[i].child != NONE)
-		{
-			i = tdefs[i].child;
-			tdefs[i].child = NONE;
-			goto child_table;
-		}
-	}
-	
-	return (0);
-}
-
-
-
-/*
 * read the distributions needed in the benchamrk
 */
 void
@@ -190,133 +143,167 @@ load_dists (void)
 	
 }
 
-/*
-* generate a particular table
-*/
-void
-gen_tbl (int tnum, DSS_HUGE start, DSS_HUGE count, long upd_num)
-{
-	static order_t o;
+static void gen_tbl(int tnum, DSS_HUGE count) {
+	order_t o;
 	supplier_t supp;
 	customer_t cust;
 	part_t part;
 	code_t code;
-	static int completed = 0;
-	DSS_HUGE i;
 
-	DSS_HUGE rows_per_segment=0;
-	DSS_HUGE rows_this_segment=-1;
-	DSS_HUGE residual_rows=0;
-
-	if (insert_segments)
-		{
-		rows_per_segment = count / insert_segments;
-		residual_rows = count - (rows_per_segment * insert_segments);
-		}
-
-	for (i = start; count; count--, i++)
-	{
-		LIFENOISE (1000, i);
+	for (DSS_HUGE i = 1; count; count--, i++) {
 		row_start(tnum);
-
-		switch (tnum)
-		{
+		switch (tnum) {
 		case LINE:
 		case ORDER:
-  		case ORDER_LINE: 
-			mk_order (i, &o, upd_num % 10000);
-
-		  if (insert_segments  && (upd_num > 0))
-			if((upd_num / 10000) < residual_rows)
-				{
-				if((++rows_this_segment) > rows_per_segment) 
-					{						
-					rows_this_segment=0;
-					upd_num += 10000;					
-					}
-				}
-			else
-				{
-				if((++rows_this_segment) >= rows_per_segment) 
-					{
-					rows_this_segment=0;
-					upd_num += 10000;
-					}
-				}
-
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&o, upd_num);
+		case ORDER_LINE:
+			mk_order(i, &o, 0);
+			// append_order_line(&o, info);
 			break;
 		case SUPP:
-			mk_supp (i, &supp);
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&supp, upd_num);
+			mk_supp(i, &supp);
+			// append_supp(&supp, info);
 			break;
 		case CUST:
-			mk_cust (i, &cust);
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&cust, upd_num);
+			mk_cust(i, &cust);
+			// append_cust(&cust, info);
 			break;
 		case PSUPP:
 		case PART:
-  		case PART_PSUPP: 
-			mk_part (i, &part);
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&part, upd_num);
+		case PART_PSUPP:
+			mk_part(i, &part);
+			// append_part_psupp(&part, info);
 			break;
 		case NATION:
-			mk_nation (i, &code);
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&code, 0);
+			mk_nation(i, &code);
+			// append_nation(&code, info);
 			break;
 		case REGION:
-			mk_region (i, &code);
-			if (set_seeds == 0)
-				tdefs[tnum].loader(&code, 0);
+			mk_region(i, &code);
+			// append_region(&code, info);
 			break;
 		}
-		row_stop(tnum);
-		if (set_seeds && (i % tdefs[tnum].base) < 2)
-		{
-			printf("\nSeeds for %s at rowcount %ld\n", tdefs[tnum].comment, i);
-			dump_seeds(tnum);
-		}
+		row_stop_h(tnum);
 	}
-	completed |= 1 << tnum;
 }
 
-
+char* get_table_name(int num) {
+	switch (num) {
+	case PART:
+		return "part";
+	case PSUPP:
+		return "partsupp";
+	case SUPP:
+		return "supplier";
+	case CUST:
+		return "customer";
+	case ORDER:
+		return "orders";
+	case LINE:
+		return "lineitem";
+	case NATION:
+		return "nation";
+	case REGION:
+		return "region";
+	default:
+		return "";
+	}
+}
 
 /*
-* int partial(int tbl, int s) -- generate the s-th part of the named tables data
+* generate a particular table
 */
-int
-partial (int tbl, int s)
-{
-	DSS_HUGE rowcnt;
-	DSS_HUGE extra;
-	
-	if (verbose > 0)
-	{
-		fprintf (stderr, "\tStarting to load stage %d of %d for %s...",
-			s, children, tdefs[tbl].comment);
-	}
-	
-	set_files (tbl, s);
-	
-	rowcnt = set_state(tbl, scale, children, s, &extra);
-
-	if (s == children)
-		gen_tbl (tbl, rowcnt * (s - 1) + 1, rowcnt + extra, upd_num);
-	else
-		gen_tbl (tbl, rowcnt * (s - 1) + 1, rowcnt, upd_num);
-	
-	if (verbose > 0)
-		fprintf (stderr, "done.\n");
-	
-	return (0);
-}
-
+//void
+//gen_tbl (int tnum, DSS_HUGE start, DSS_HUGE count, long upd_num)
+//{
+//	static order_t o;
+//	supplier_t supp;
+//	customer_t cust;
+//	part_t part;
+//	code_t code;
+//	static int completed = 0;
+//	DSS_HUGE i;
+//
+//	DSS_HUGE rows_per_segment=0;
+//	DSS_HUGE rows_this_segment=-1;
+//	DSS_HUGE residual_rows=0;
+//
+//	if (insert_segments)
+//		{
+//		rows_per_segment = count / insert_segments;
+//		residual_rows = count - (rows_per_segment * insert_segments);
+//		}
+//
+//	for (i = start; count; count--, i++)
+//	{
+//		LIFENOISE (1000, i);
+//		row_start(tnum);
+//
+//		switch (tnum)
+//		{
+//		case LINE:
+//		case ORDER:
+//  		case ORDER_LINE: 
+//			mk_order (i, &o, upd_num % 10000);
+//
+//		  if (insert_segments  && (upd_num > 0))
+//			if((upd_num / 10000) < residual_rows)
+//				{
+//				if((++rows_this_segment) > rows_per_segment) 
+//					{						
+//					rows_this_segment=0;
+//					upd_num += 10000;					
+//					}
+//				}
+//			else
+//				{
+//				if((++rows_this_segment) >= rows_per_segment) 
+//					{
+//					rows_this_segment=0;
+//					upd_num += 10000;
+//					}
+//				}
+//
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&o, upd_num);
+//			break;
+//		case SUPP:
+//			mk_supp (i, &supp);
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&supp, upd_num);
+//			break;
+//		case CUST:
+//			mk_cust (i, &cust);
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&cust, upd_num);
+//			break;
+//		case PSUPP:
+//		case PART:
+//  		case PART_PSUPP: 
+//			mk_part (i, &part);
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&part, upd_num);
+//			break;
+//		case NATION:
+//			mk_nation (i, &code);
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&code, 0);
+//			break;
+//		case REGION:
+//			mk_region (i, &code);
+//			if (set_seeds == 0)
+//				tdefs[tnum].loader(&code, 0);
+//			break;
+//		}
+//		row_stop(tnum);
+//		if (set_seeds && (i % tdefs[tnum].base) < 2)
+//		{
+//			printf("\nSeeds for %s at rowcount %ld\n", tdefs[tnum].comment, i);
+//			dump_seeds(tnum);
+//		}
+//	}
+//	completed |= 1 << tnum;
+//}
+//
 
 #define REGION_SCHEMA(schema) "CREATE TABLE "schema".region"\
 	       " ("\
@@ -422,6 +409,92 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
         return err;
     if((err=monetdbe_query(mdbe, LINE_ITEM_SCHEMA("sys"), NULL, NULL)) != NULL)
         return err;
+    
+	if (flt_scale == 0) {
+		// schema only
+		return NULL;
+	}
+    
+	// generate the actual data
+	DSS_HUGE rowcnt = 0;
+	DSS_HUGE i;
+	// all tables
+	table = (1 << CUST) | (1 << SUPP) | (1 << NATION) | (1 << REGION) | (1 << PART_PSUPP) | (1 << ORDER_LINE);
+	force = 0;
+	insert_segments = 0;
+	delete_segments = 0;
+	insert_orders_segment = 0;
+	insert_lineitem_segment = 0;
+	delete_segment = 0;
+	verbose = 0;
+	set_seeds = 0;
+	scale = 1;
+	updates = 0;
+
+	// check if it is the first invocation
+	if (first_invocation) {
+		// store the initial random seed
+		memcpy(seed_backup, Seed, sizeof(seed_t) * MAX_STREAM + 1);
+		first_invocation = false;
+	} else {
+		// restore random seeds from backup
+		memcpy(Seed, seed_backup, sizeof(seed_t) * MAX_STREAM + 1);
+	}
+	tdefs[PART].base = 200000;
+	tdefs[PSUPP].base = 200000;
+	tdefs[SUPP].base = 10000;
+	tdefs[CUST].base = 150000;
+	tdefs[ORDER].base = 150000 * ORDERS_PER_CUST;
+	tdefs[LINE].base = 150000 * ORDERS_PER_CUST;
+	tdefs[ORDER_LINE].base = 150000 * ORDERS_PER_CUST;
+	tdefs[PART_PSUPP].base = 200000;
+	tdefs[NATION].base = NATIONS_MAX;
+	tdefs[REGION].base = NATIONS_MAX;
+
+	children = 1;
+	d_path = NULL;
+	
+    if (flt_scale < MIN_SCALE) {
+		int i;
+		int int_scale;
+
+		scale = 1;
+		int_scale = (int)(1000 * flt_scale);
+		for (i = PART; i < REGION; i++) {
+			tdefs[i].base = (DSS_HUGE)(int_scale * tdefs[i].base) / 1000;
+			if (tdefs[i].base < 1)
+				tdefs[i].base = 1;
+		}
+	} else {
+		scale = (long)flt_scale;
+	}
+    printf("check -- %s", env_config (DIST_TAG, DIST_DFLT));
+	load_dists();
+	
+    /* have to do this after init */
+	tdefs[NATION].base = nations.count;
+	tdefs[REGION].base = regions.count;
+
+	/**
+	** actual data generation section starts here
+	**/
+
+	/*
+	* traverse the tables, invoking the appropriate data generation routine for any to be built
+	*/
+	for (i = PART; i <= REGION; i++) {
+		if (table & (1 << i))
+		{
+            minrow = 1;
+            if (i < NATION)
+                rowcnt = tdefs[i].base * scale;
+            else
+                rowcnt = tdefs[i].base;
+            // gen_tbl ((int)i, minrow, rowcnt, upd_num);
+		}
+    }
+
+
     return NULL;
 }
 
