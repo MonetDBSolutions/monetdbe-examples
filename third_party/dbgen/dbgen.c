@@ -143,6 +143,47 @@ load_dists (void)
 	
 }
 
+
+typedef struct append_info_t {
+    size_t ncols;
+    monetdbe_column** cols;
+} append_info_t;
+
+
+struct append_info_t create_region_info(DSS_HUGE count) {
+    monetdbe_column* col1 = (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t));
+    col1->type = monetdbe_int64_t;
+    monetdbe_column* col2 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
+    monetdbe_column* col3 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
+    monetdbe_column* cols[] = {col1, col2, col3};
+    struct append_info_t info = {3, cols};
+    // TODO 
+    return info;
+}
+
+static void append_region(append_info_t* t, code_t* c) {
+ for (size_t i=0; i < (t->ncols); i++) {
+ }
+}
+
+
+//typedef struct {
+//    monetdbe_types type;
+//    void *data;
+//    size_t count;
+//    char* name;
+//} monetdbe_column;
+//
+//
+//typedef struct
+//{
+//    DSS_HUGE            code;
+//    char            *text;
+//    long            join;
+//    char            comment[N_CMNT_MAX + 1];
+//    int             clen;
+//} code_t;
+
 static void gen_tbl(int tnum, DSS_HUGE count) {
 	order_t o;
 	supplier_t supp;
@@ -180,6 +221,7 @@ static void gen_tbl(int tnum, DSS_HUGE count) {
 		case REGION:
 			mk_region(i, &code);
 			// append_region(&code, info);
+            printf("code is %zu\n", (&code)->code);
 			break;
 		}
 		row_stop_h(tnum);
@@ -208,102 +250,6 @@ char* get_table_name(int num) {
 		return "";
 	}
 }
-
-/*
-* generate a particular table
-*/
-//void
-//gen_tbl (int tnum, DSS_HUGE start, DSS_HUGE count, long upd_num)
-//{
-//	static order_t o;
-//	supplier_t supp;
-//	customer_t cust;
-//	part_t part;
-//	code_t code;
-//	static int completed = 0;
-//	DSS_HUGE i;
-//
-//	DSS_HUGE rows_per_segment=0;
-//	DSS_HUGE rows_this_segment=-1;
-//	DSS_HUGE residual_rows=0;
-//
-//	if (insert_segments)
-//		{
-//		rows_per_segment = count / insert_segments;
-//		residual_rows = count - (rows_per_segment * insert_segments);
-//		}
-//
-//	for (i = start; count; count--, i++)
-//	{
-//		LIFENOISE (1000, i);
-//		row_start(tnum);
-//
-//		switch (tnum)
-//		{
-//		case LINE:
-//		case ORDER:
-//  		case ORDER_LINE: 
-//			mk_order (i, &o, upd_num % 10000);
-//
-//		  if (insert_segments  && (upd_num > 0))
-//			if((upd_num / 10000) < residual_rows)
-//				{
-//				if((++rows_this_segment) > rows_per_segment) 
-//					{						
-//					rows_this_segment=0;
-//					upd_num += 10000;					
-//					}
-//				}
-//			else
-//				{
-//				if((++rows_this_segment) >= rows_per_segment) 
-//					{
-//					rows_this_segment=0;
-//					upd_num += 10000;
-//					}
-//				}
-//
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&o, upd_num);
-//			break;
-//		case SUPP:
-//			mk_supp (i, &supp);
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&supp, upd_num);
-//			break;
-//		case CUST:
-//			mk_cust (i, &cust);
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&cust, upd_num);
-//			break;
-//		case PSUPP:
-//		case PART:
-//  		case PART_PSUPP: 
-//			mk_part (i, &part);
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&part, upd_num);
-//			break;
-//		case NATION:
-//			mk_nation (i, &code);
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&code, 0);
-//			break;
-//		case REGION:
-//			mk_region (i, &code);
-//			if (set_seeds == 0)
-//				tdefs[tnum].loader(&code, 0);
-//			break;
-//		}
-//		row_stop(tnum);
-//		if (set_seeds && (i % tdefs[tnum].base) < 2)
-//		{
-//			printf("\nSeeds for %s at rowcount %ld\n", tdefs[tnum].comment, i);
-//			dump_seeds(tnum);
-//		}
-//	}
-//	completed |= 1 << tnum;
-//}
-//
 
 #define REGION_SCHEMA(schema) "CREATE TABLE "schema".region"\
 	       " ("\
@@ -488,9 +434,16 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
                 rowcnt = tdefs[i].base * scale;
             else
                 rowcnt = tdefs[i].base;
-            printf("table -------------------%s\n", get_table_name(i));
-            printf("rowcount -------------------%d\n", rowcnt);
-            gen_tbl((int)i, rowcnt);
+            if (i == REGION) {
+                printf("table -------------------%s\n", get_table_name(i));
+                printf("rowcount -------------------%d\n", rowcnt);
+                struct append_info_t region_info = create_region_info(rowcnt); 
+                struct append_info_t* pp = &region_info;
+                printf("---------------\n");
+                printf("region ncols --> %d\n", pp->ncols);
+  //              printf("region rows --> %zu\n", sizeof(region_info->cols[0])/sizeof(monetdbe_int64_t));
+            }
+    //        gen_tbl((int)i, rowcnt);
 		}
     }
 
