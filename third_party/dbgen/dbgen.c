@@ -153,6 +153,8 @@ typedef struct append_info_t {
 struct append_info_t create_region_info(DSS_HUGE count) {
     monetdbe_column* col1 = (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t));
     col1->type = monetdbe_int64_t;
+    col1->count = count;
+    col1->name = "foo";
     monetdbe_column* col2 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
     monetdbe_column* col3 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
     monetdbe_column* cols[] = {col1, col2, col3};
@@ -160,6 +162,7 @@ struct append_info_t create_region_info(DSS_HUGE count) {
     // TODO 
     return info;
 }
+
 
 static void append_region(append_info_t* t, code_t* c) {
  for (size_t i=0; i < (t->ncols); i++) {
@@ -441,7 +444,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
                 struct append_info_t* pp = &region_info;
                 printf("---------------\n");
                 printf("region ncols --> %d\n", pp->ncols);
-  //              printf("region rows --> %zu\n", sizeof(region_info->cols[0])/sizeof(monetdbe_int64_t));
+                printf("check --> %d\n", pp->cols[0]->count);
             }
     //        gen_tbl((int)i, rowcnt);
 		}
