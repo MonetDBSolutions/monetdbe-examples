@@ -52,11 +52,6 @@
 #include "dbgen.h"
 #define debug(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
-/*
-* Function prototypes
-*/
-static void	gen_tbl (int tnum,  DSS_HUGE count);
-
 extern int optind, opterr;
 extern char *optarg;
 DSS_HUGE rowcnt = 0, minrow = 0;
@@ -143,30 +138,69 @@ load_dists (void)
 	
 }
 
-
 typedef struct append_info_t {
     size_t ncols;
     monetdbe_column** cols;
+    size_t counter;
 } append_info_t;
 
+/*
+* Function prototypes
+*/
+static void	gen_tbl (int tnum,  DSS_HUGE count, append_info_t*);
 
-struct append_info_t create_region_info(DSS_HUGE count) {
-    monetdbe_column* col1 = (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t));
-    col1->type = monetdbe_int64_t;
-    col1->count = count;
-    col1->name = "foo";
-    monetdbe_column* col2 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
-    monetdbe_column* col3 = (monetdbe_column*) malloc(sizeof(monetdbe_column_str));
-    monetdbe_column* cols[] = {col1, col2, col3};
-    struct append_info_t info = {3, cols};
-    // TODO 
-    return info;
+static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
+    switch(t) {
+        case monetdbe_bool:
+            return malloc(sizeof(bool)*n);
+        case monetdbe_int8_t: 
+            return malloc(sizeof(int8_t)*n);
+        case monetdbe_int16_t: 
+            return malloc(sizeof(int16_t)*n);
+        case monetdbe_int32_t: 
+            return malloc(sizeof(int32_t)*n);
+        case monetdbe_int64_t: 
+            return malloc(sizeof(int64_t)*n);
+        case monetdbe_float: 
+            return malloc(sizeof(float)*n);
+        case monetdbe_double:
+            return malloc(sizeof(double)*n);
+        case monetdbe_str: 
+            return malloc(sizeof(char**)*n);
+        case monetdbe_blob: 
+            return malloc(sizeof(monetdbe_data_blob)*n);
+        case monetdbe_date: 
+            return malloc(sizeof(monetdbe_data_date)*n);
+        case monetdbe_time:
+            return malloc(sizeof(monetdbe_data_time)*n);
+        case monetdbe_timestamp:
+            return malloc(sizeof(monetdbe_data_timestamp)*n);
+        default:
+            return NULL;
+    }
+}
+static void init_info(append_info_t* t, DSS_HUGE count) {
+    int _type;
+    for(size_t i=0; i < (t->ncols); i++) {
+        t->cols[i]->count = count;
+        t->cols[i]->data = Zalloc(t->cols[i]->type, count);
+    }
 }
 
-
-static void append_region(append_info_t* t, code_t* c) {
- for (size_t i=0; i < (t->ncols); i++) {
- }
+static void append_region(code_t* c, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "r_regionkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = c->code; 
+         }
+         if(strcmp(t->cols[i]->name, "r_name") == 0){
+             ((char**)t->cols[i]->data)[k] = c->text; 
+         }
+         if(strcmp(t->cols[i]->name, "r_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = c->comment; 
+         }
+   }
+    t->counter++;
 }
 
 
@@ -187,7 +221,7 @@ static void append_region(append_info_t* t, code_t* c) {
 //    int             clen;
 //} code_t;
 
-static void gen_tbl(int tnum, DSS_HUGE count) {
+static void gen_tbl(int tnum, DSS_HUGE count, append_info_t* info) {
 	order_t o;
 	supplier_t supp;
 	customer_t cust;
@@ -223,7 +257,7 @@ static void gen_tbl(int tnum, DSS_HUGE count) {
 			break;
 		case REGION:
 			mk_region(i, &code);
-			// append_region(&code, info);
+			append_region(&code, info);
             printf("code is %zu\n", (&code)->code);
 			break;
 		}
@@ -424,8 +458,21 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 	tdefs[REGION].base = regions.count;
 
 	/**
-	** actual data generation section starts here
+	** region_append_info
 	**/
+    struct append_info_t region_info = {3, NULL, 0};
+    monetdbe_column* region_cols[] = {
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
+    };
+    region_cols[0]->type = monetdbe_int64_t;
+    region_cols[1]->type = monetdbe_str;
+    region_cols[2]->type = monetdbe_str;
+    region_cols[0]->name = "r_regionkey";
+    region_cols[1]->name = "r_name";
+    region_cols[2]->name = "r_comment";
+    region_info.cols = region_cols;
 
 	/*
 	* traverse the tables, invoking the appropriate data generation routine for any to be built
@@ -440,11 +487,10 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             if (i == REGION) {
                 printf("table -------------------%s\n", get_table_name(i));
                 printf("rowcount -------------------%d\n", rowcnt);
-                struct append_info_t region_info = create_region_info(rowcnt); 
-                struct append_info_t* pp = &region_info;
+                init_info(&region_info, rowcnt); 
                 printf("---------------\n");
-                printf("region ncols --> %d\n", pp->ncols);
-                printf("check --> %d\n", pp->cols[0]->count);
+                printf("check --> %d\n", region_info.cols[0]->count);
+                gen_tbl((int)i, rowcnt, &region_info);
             }
     //        gen_tbl((int)i, rowcnt);
 		}
