@@ -33,8 +33,9 @@ def createschema():
 def loaddata():
     f = open(datapathprefix  +  "imdb_table_names","r")
     imdb_tables = json.loads(f.read())
-    for t in imdb_tables:
-        cur.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
+    for table_name in imdb_tables:
+        print(table_name)
+        cur.execute("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
 
 def readqueries():
     f = open(datapathprefix  +  "imdbs_queries","r")
@@ -48,7 +49,7 @@ def runqueries():
 
 
 if __name__ == "__main__":
-    conn = monetdbe.connect(':memory:', autocommit=False)
+    conn = monetdbe.connect(':memory:', autocommit=True)
     if not conn:
         print('Could not access the memory')
         exit -1
