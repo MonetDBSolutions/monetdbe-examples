@@ -6,7 +6,7 @@
  (c) 2020- MonetDB Solutions B.V.
 
  This trivial program can be used to check if all the basic ingredients
- for using MonetDBe has been available and accessible.
+ for using MonetDB/e has been available and accessible.
 
  For an explanation of the command arguments see the documentation
  https://monetdbe.readthedocs.io/en/latest/introduction.html
