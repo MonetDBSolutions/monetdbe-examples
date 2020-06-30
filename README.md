@@ -17,7 +17,7 @@ daily life, we collected a handful of small examples to try it out.
 | movies.py |an edcucational example based on a movie  database |
 | imdb.py |a snippet of the infamous movie database |
 | tumble.c    |switching between different databases|
-| kickoff.{c, py}    |the kickoff example to test part of the api|
+| kickoff.c    |the kickoff example to test part of the api|
 | tpch-sf1.py |the prototypical TPCH scale-factor 1 data warehouse|
 | taxi.py |the NYC taxi example  |
 | mgbench.py | A machine generated database benchmark |
