@@ -6,9 +6,9 @@
  (c) 2020- MonetDB Solutions B.V.
 
  This trivial program can be used to check if all the basic ingredients
- for using MonetDBe has been available and accessible.
+ for using MonetDB/e has been available and accessible.
 
- For an explanation of the command arguments see MonetDBe/Python documentation
+ For an explanation of the command arguments see the Python documentation fo MonetDB/e
 """
 import monetdbe
 
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         print('Could not access the memory')
         exit -1
 
-    print("hello world, we have a lift off\nMonetDBe has been started\n")
+    print("hello world, we have a lift off\nMonetDB/e has been started\n")
 
     try:
         conn.close()
