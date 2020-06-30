@@ -35,7 +35,7 @@ main(int argc, char **argv)
     
 	if ((err = monetdbe_query(mdbe, "select * from sys.region;", &result, NULL)) != NULL)
 		error(err)
-    fprintf(stdout, "Query result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    fprintf(stdout, "REGION tbl result with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
 	
     if ((err = monetdbe_query(mdbe, "select * from sys.nation;", &result, NULL)) != NULL)
 		error(err)

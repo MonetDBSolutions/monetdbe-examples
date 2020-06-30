@@ -491,6 +491,8 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
                 printf("---------------\n");
                 printf("check --> %d\n", region_info.cols[0]->count);
                 gen_tbl((int)i, rowcnt, &region_info);
+                if ((err = monetdbe_append(mdbe, "sys", "region", region_info.cols, region_info.ncols)) != NULL)
+                    return err;
             }
     //        gen_tbl((int)i, rowcnt);
 		}
