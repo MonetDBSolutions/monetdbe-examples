@@ -5,9 +5,11 @@
 
  (c) 2020- MonetDB Solutions B.V.
 
-this example is based on https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
-It illustrates some basic database interactions albeit with re-establishing a connection with database
-repeatedly.
+
+ For an explanation of the command arguments see the documentation
+
+ This example is based on https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
+ It illustrates some basic database interactions albeit with re-establishing a connection with database repeatedly.
 """
 
 import monetdbe
@@ -93,7 +95,7 @@ with monetdbe.connect(database) as conn:
 # Show us the guts of the database! This command is SQLite-specific.
 with monetdbe.connect(database) as conn:
     cursor = conn.cursor()
-    results = cursor.execute("""SELECT * FROM sqlite_master WHERE type = 'table'""")
+    results = cursor.execute("""SELECT count(*) FROM tables""")
     print(list(results))
 
 with monetdbe.connect(database) as conn:

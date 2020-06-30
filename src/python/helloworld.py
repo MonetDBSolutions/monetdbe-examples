@@ -8,7 +8,8 @@
  This trivial program can be used to check if all the basic ingredients
  for using MonetDB/e has been available and accessible.
 
- For an explanation of the command arguments see the Python documentation fo MonetDB/e
+ For an explanation of the command arguments see the documentation
+ https://monetdbe.readthedocs.io/en/latest/introduction.html
 """
 import monetdbe
 

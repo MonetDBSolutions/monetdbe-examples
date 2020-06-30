@@ -10,7 +10,10 @@
 
  For an explanation of the command arguments see MonetDBe/Python documentation
 
-adapted from https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
+ Adapted from https://team-mayes.github.io/che_696/html/notebooks/lecture17_databases.html
+
+ For an explanation of the command arguments see the documentation
+ https://monetdbe.readthedocs.io/en/latest/introduction.html
 """
 
 import monetdbe
@@ -76,7 +79,6 @@ with monetdbe.connect(database) as conn:
     results = conn.execute("""SELECT * FROM Actors""")
     print(results.fetchall())
 
-with monetdbe.connect(database) as conn:
     conn.execute(
         """CREATE TABLE MovieActors
         (id SERIAL, movie_id INTEGER NOT NULL, actor_id INTEGER NOT NULL)""")
@@ -89,7 +91,6 @@ with monetdbe.connect(database) as conn:
     results = conn.execute("""SELECT * FROM MovieActors""")
     print(results.fetchall())
 
-with monetdbe.connect(database) as conn:
     results = conn.execute(
         """SELECT * FROM MovieActors
         JOIN Movies ON MovieActors.movie_id = Movies.id

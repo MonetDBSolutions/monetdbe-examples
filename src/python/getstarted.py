@@ -1,3 +1,16 @@
+"""
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0.  If a copy of the MPL was not distributed with this
+ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+ (c) 2020- MonetDB Solutions B.V.
+
+ This trivial program can be used to check if all the basic ingredients
+ for using MonetDB/e has been available and accessible.
+
+ For an explanation of the command arguments see the documentation
+ https://monetdbe.readthedocs.io/en/latest/introduction.html
+"""
 import monetdbe
 
 if __name__ == "__main__":
@@ -22,7 +35,7 @@ if __name__ == "__main__":
     # TODO for r in c.fetchrows():
     #   print(r)
 
-    # alternative interface
+    # TODO alternative interface
     # for i in range(c.nrofrows):
     #   for col in c.fetchcolumns():
     #       print(col[r])

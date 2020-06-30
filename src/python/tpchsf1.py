@@ -8,6 +8,9 @@
  This program is the canonical data warehouse benchmark TPCH SF1.
  To prepare, use the dbgen program to create the necessary data files in ../../third-party/tpch
  For an explanation of the command arguments see MonetDBe/Python documentation
+
+ For an explanation of the command arguments see the documentation
+ https://monetdbe.readthedocs.io/en/latest/introduction.html
 """ 
 
 import monetdbe
@@ -18,6 +21,8 @@ if __name__ == "__main__":
     if not conn:
         print('Could not access the memory')
 
+    c = conn.cursor()
+    print('To be defined')
     
     c.close()
     conn.close()

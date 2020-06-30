@@ -143,6 +143,9 @@ def regression():
     print("Regression %6.3f seconds"  %(time.time() - clk))
 
 if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print('Provide the absolute path the location of the input data')
+        exit(-1)
     print(sys.argv[1])
     createdb()
     loaddb(sys.argv[1])
