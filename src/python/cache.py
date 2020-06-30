@@ -14,6 +14,7 @@ import monetdbe
 
 if __name__ == "__main__":
     print('This experiment is on hold until we support remote connections')
+    exit(-1)
     
     try:
         remote = monetdbe.connect("monetdb://localhost:5000/sf1?user=monetdb&password=monetdb")

@@ -10,13 +10,15 @@ This program is intended to load the imdb database sample
 The DDL contains reserved words that need to be quoted.
 Awaiting the auto-quoting option in monetdbe-python
 
- For an explanation of the command arguments see MonetDBe/Python documentation
+ For an explanation of the command arguments see the documentation
+ https://monetdbe.readthedocs.io/en/latest/introduction.html
 """
 import monetdbe
 import json
 import time 
 
 conn = None
+cur = None
 imdb_tables = []
 imdb_ddl = []
 imdb_queries = []
@@ -26,13 +28,13 @@ def createschema():
     f = open(datapathprefix  +  "imdb_tables_ddl","r")
     imdb_ddl = f.read().splitlines()
     for d in imdb_ddl:
-        conn.execute(d)
+        cur.execute(d)
 
 def loaddata():
     f = open(datapathprefix  +  "imdb_table_names","r")
     imdb_tables = json.loads(f.read())
     for t in imdb_tables:
-        conn.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
+        cur.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
 
 def readqueries():
     f = open(datapathprefix  +  "imdbs_queries","r")
@@ -46,14 +48,17 @@ def runqueries():
 
 
 if __name__ == "__main__":
-    conn = monetdbe.connect(':memory:')
+    conn = monetdbe.connect(':memory:', autocommit=False)
     if not conn:
         print('Could not access the memory')
         exit -1
-    conn.execute("""BEGIN TRANSACTION;""")
+    cur = conn.cursor()
+    # WRONG   conn.execute("""BEGIN TRANSACTION;""")
+    cur.transaction()
     createschema()
     loaddata()
     readqueries()
     runqueries()
-    conn.execute("""COMMIT;""")
+    cur.commit()
+    # WRONG conn.execute("""COMMIT;""")
     conn.close()
