@@ -16,6 +16,7 @@ Awaiting the auto-quoting option in monetdbe-python
 import monetdbe
 import json
 import time 
+import sys
 
 conn = None
 cur = None
@@ -25,19 +26,38 @@ imdb_queries = []
 datapathprefix = "../../third_party/imdb/"
 
 def createschema():
-    f = open(datapathprefix  +  "imdb_tables_ddl","r")
-    imdb_ddl = f.read().splitlines()
+    try:
+        fname = datapathprefix  +  "imdb_tables_ddl"
+        f = open(fname,"r")
+        imdb_ddl = f.read().splitlines()
+    except IOError as msg:
+        print(f"Could not open/read {fname}")
+        exit(-1)
     for d in imdb_ddl:
+        print(d)
         cur.execute(d)
 
 def loaddata():
-    f = open(datapathprefix  +  "imdb_table_names","r")
-    imdb_tables = json.loads(f.read())
+    try:
+        fname = datapathprefix  +  "imdb_table_names"
+        f = open(fname,"r")
+        imdb_tables = json.loads(f.read())
+    except IOError as msg:
+        print(f"Could not open/read {fname}")
+        exit(-1)
+    
+    print('loading data')
     for t in imdb_tables:
         cur.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
 
 def readqueries():
-    f = open(datapathprefix  +  "imdbs_queries","r")
+    try:
+        fname = datapathprefix  +  "imdb_table_names"
+        f = open(fname,"r")
+    except IOError as msg:
+        print(f"Could not open/read {fname}")
+        exit(-1)
+
     imdb_queries = json.loads(f.read())
 
 def runqueries():
@@ -48,9 +68,13 @@ def runqueries():
 
 
 if __name__ == "__main__":
-    conn = monetdbe.connect(':memory:', autocommit=False)
+    if len(sys.argv) != 2:
+        print("Identify the full path to the data definitions")
+        exit(-1)
+
+    conn = monetdbe.connect(':memory:', autocommit=True)
     if not conn:
-        print('Could not access the memory')
+        print('Could not access the database')
         exit -1
     cur = conn.cursor()
     # WRONG   conn.execute("""BEGIN TRANSACTION;""")
