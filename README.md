@@ -1,5 +1,5 @@
 # monetdbe-examples
-A small collection of C and Python programs to illustrate MonetDBe.
+A small collection of C and Python programs to illustrate MonetDB/e.
 
 The MonetDB server code has been split into a separately useable single library
 for integration with a host language.
@@ -24,6 +24,7 @@ daily life, we collected a handful of small examples to try it out.
 | logs.c | a snippet of the inhouse qa database |
 | cache.{c, py}  |a simple caching database application |
 | myserver.c | a minimalistic database server setup |
+| multiconnections.c | multiple connections from same program |
 
 Feel free to propose other tiny examples that help users to explore the system.
 As a more extensive QA activity is ongoing, it may lead to smaller changes in the
