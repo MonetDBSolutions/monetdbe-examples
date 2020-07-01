@@ -48,23 +48,34 @@ def loaddata():
     
     print('loading data')
     for t in imdb_tables:
-        print(table_name)
-        cur.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
+        print(t)
+        cur.execute("COPY " + t + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
 
 def readqueries():
+    global imdb_queries
     try:
-        fname = datapathprefix  +  "imdb_table_names"
+        fname = datapathprefix  +  "imdb_queries"
         f = open(fname,"r")
     except IOError as msg:
         print(f"Could not open/read {fname}")
         exit(-1)
-
-    imdb_queries = json.loads(f.read())
+    print(f"Loading the queries from '{fname}'")
+    imdb_queries = f.read().splitlines()
+    print(f"Loaded {len(imdb_queries)} queries")
 
 def runqueries():
+    global imdb_queries
+    print('Start running the queries')
     for q in imdb_queries:
         clk = time.time()
-        print(q)
+        qry= q[15:-1]
+        qry = qry.replace('\\n',' ')
+        print(q[:15])
+        print(qry)
+        cur.execute(qry)
+        res = cur.fetchall()
+        for r in res:
+            print(r)
         print(f"QRY {q[4:5]} {time.time() - clk} ms")
 
 
@@ -81,7 +92,7 @@ if __name__ == "__main__":
     # WRONG   conn.execute("""BEGIN TRANSACTION;""")
     cur.transaction()
     createschema()
-    loaddata()
+    # loaddata() TODO
     readqueries()
     runqueries()
     cur.commit()

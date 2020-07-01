@@ -14,7 +14,7 @@
 import monetdbe
 
 if __name__ == "__main__":
-    conn1 = monetdbe.connect('db1')
+    conn1 = monetdbe.connect('db1', autocommit=True)
     if not conn1:
         print('Could not access database db1')
         exit -1
@@ -28,7 +28,7 @@ if __name__ == "__main__":
         print(r)
 
     # open second connection to same database
-    conn2 = monetdbe.connect('db1')
+    conn2 = monetdbe.connect('db1', autocommit=True)
     if not conn2:
         print('Could not access database db1')
         exit -1
@@ -60,9 +60,14 @@ if __name__ == "__main__":
         print(r)
 
     # and the first connection can still be used
-    cur1.execute('select sum(i) from tmp1')
-    res3 = cur1.fetchall()
-    print(f"sum {res3}")
+    try:
+        cur1.execute('select * from tmp1')
+        res3 = cur1.fetchall()
+        print(f"sum {res3}")
+        cur1.execute('drop table tmp1');
+        cur2.execute('drop table tmp1');
+    except monetdbe.DatabaseError as msg:
+        print(f"Error {msg}")
 
     conn1.close()
     conn2.close()
