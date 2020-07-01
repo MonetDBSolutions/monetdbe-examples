@@ -48,6 +48,7 @@ def loaddata():
     
     print('loading data')
     for t in imdb_tables:
+        print(table_name)
         cur.Query("COPY " + table_name + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
 
 def readqueries():
