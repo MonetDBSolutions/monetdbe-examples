@@ -219,6 +219,30 @@ static void append_region(code_t* c, append_info_t* t) {
     t->counter++;
 }
 
+static void append_nation(code_t* c, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "n_nationkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = c->code; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "n_name") == 0){
+             ((char**)t->cols[i]->data)[k] = c->text; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "n_regionkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = c->join; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "n_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = c->comment;
+             continue;
+         }
+         assert(false);
+   }
+    t->counter++;
+}
+
 
 static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 
@@ -226,16 +250,23 @@ static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
         case LINE:
         case ORDER:
         case ORDER_LINE:
+            init_info(&(info->ORDER_INFO), count);
+            init_info(&(info->LINE_INFO), count);
             break;
         case SUPP:
+            init_info(&(info->SUPP_INFO), count);
             break;
         case CUST:
+            init_info(&(info->CUST_INFO), count);
             break;
         case PSUPP:
         case PART:
         case PART_PSUPP:
+            init_info(&(info->PSUPP_INFO), count);
+            init_info(&(info->PART_INFO), count);
             break;
         case NATION:
+            init_info(&(info->NATION_INFO), count);
             break;
         case REGION:
             init_info(&(info->REGION_INFO), count);
@@ -275,7 +306,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 			break;
 		case NATION:
 			mk_nation(i, &code);
-			// append_nation(&code, info);
+			append_nation(&code, &(info->NATION_INFO));
 			break;
 		case REGION:
 			mk_region(i, &code);
@@ -781,7 +812,10 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 		}
 	}
 
-    if ((err = monetdbe_append(mdbe, "sys", "region", region_info.cols, region_info.ncols)) != NULL)
+    //if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+    //    return err;
+
+    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
         return err;
 
     return NULL;
