@@ -258,14 +258,13 @@ static void gen_tbl(int tnum, DSS_HUGE count, append_info_t* info) {
 		case REGION:
 			mk_region(i, &code);
 			append_region(&code, info);
-            printf("code is %zu\n", (&code)->code);
 			break;
 		}
 		row_stop_h(tnum);
 	}
 }
 
-char* get_table_name(int num) {
+char*  get_table_name(int num) {
 	switch (num) {
 	case PART:
 		return "part";
@@ -473,7 +472,57 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     region_cols[1]->name = "r_name";
     region_cols[2]->name = "r_comment";
     region_info.cols = region_cols;
-
+	/**
+	** nation_append_info
+	**/
+    struct append_info_t nation_info = {4, NULL, 0};
+    monetdbe_column* nation_cols[] = {
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
+    };
+    nation_cols[0]->type = monetdbe_int64_t;
+    nation_cols[1]->type = monetdbe_str;
+    nation_cols[2]->type = monetdbe_int64_t;
+    nation_cols[3]->type = monetdbe_str;
+    nation_cols[0]->name = "n_nationkey";
+    nation_cols[1]->name = "n_name";
+    nation_cols[2]->name = "n_regionkey";
+    nation_cols[3]->name = "n_comment";
+    nation_info.cols = nation_cols;
+	/**
+	**supplier_append_info
+	**/
+    struct append_info_t supplier_info = {7, NULL, 0};
+    monetdbe_column* supplier_cols[] = {
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
+        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
+    };
+	       
+    
+    
+    
+//    "s_suppkey INT NOT NULL,"\
+//	       "s_name VARCHAR(25) NOT NULL,"\
+//	       "s_address VARCHAR(40) NOT NULL,"\
+//	       "s_nationkey INT NOT NULL,"\
+//	       "s_phone VARCHAR(15) NOT NULL,"\
+//	       "s_acctbal DECIMAL(15,2) NOT NULL,"\
+//	       "s_comment VARCHAR(101) NOT NULL);"
+//#define PART 0
+//#define PSUPP 1
+//#define SUPP 2
+//#define CUST 3
+//#define ORDER 4
+//#define LINE 5
+//#define ORDER_LINE 6
+//#define PART_PSUPP 7
+//#define NATION 8
+//#define REGION 9
+    
 	/*
 	* traverse the tables, invoking the appropriate data generation routine for any to be built
 	*/
@@ -484,17 +533,14 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
                 rowcnt = tdefs[i].base * scale;
             else
                 rowcnt = tdefs[i].base;
+            printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
+            printf("---------------\n");
             if (i == REGION) {
-                printf("table -------------------%s\n", get_table_name(i));
-                printf("rowcount -------------------%d\n", rowcnt);
                 init_info(&region_info, rowcnt); 
-                printf("---------------\n");
-                printf("check --> %d\n", region_info.cols[0]->count);
                 gen_tbl((int)i, rowcnt, &region_info);
                 if ((err = monetdbe_append(mdbe, "sys", "region", region_info.cols, region_info.ncols)) != NULL)
                     return err;
             }
-    //        gen_tbl((int)i, rowcnt);
 		}
     }
 
