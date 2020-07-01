@@ -1,5 +1,5 @@
 # monetdbe-examples
-A small collection of C and Python programs to illustrate MonetDBe.
+A small collection of C and Python programs to illustrate MonetDB/e.
 
 The MonetDB server code has been split into a separately useable single library
 for integration with a host language.
