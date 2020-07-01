@@ -243,6 +243,125 @@ static void append_nation(code_t* c, append_info_t* t) {
     t->counter++;
 }
 
+static void append_supp(supplier_t* s, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "s_suppkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = s->suppkey;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_name") == 0){
+             ((char**)t->cols[i]->data)[k] = s->name; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_address") == 0){
+             ((char**)t->cols[i]->data)[k] = s->address; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_nationkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = s->nation_code; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_phone") == 0){
+             ((char**)t->cols[i]->data)[k] = s->phone;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_acctbal") == 0){
+             ((double*)t->cols[i]->data)[k] = s->acctbal;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "s_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = s->comment;
+             continue;
+         }
+         assert(false);
+   }
+    t->counter++;
+}
+
+static void append_cust(customer_t* c, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "c_custkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = c->custkey;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_name") == 0){
+             ((char**)t->cols[i]->data)[k] = c->name; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_address") == 0){
+             ((char**)t->cols[i]->data)[k] = c->address; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_nationkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = c->nation_code; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_phone") == 0){
+             ((char**)t->cols[i]->data)[k] = c->phone;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_acctbal") == 0){
+             ((double*)t->cols[i]->data)[k] = c->acctbal;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_mktsegment") == 0){
+             ((char**)t->cols[i]->data)[k] = c->mktsegment;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "c_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = c->comment;
+             continue;
+         }
+         assert(false);
+   }
+    t->counter++;
+}
+
+static void append_part(part_t* p, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "p_partkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = p->partkey;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_name") == 0){
+             ((char**)t->cols[i]->data)[k] = p->name; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_mfgr") == 0){
+             ((char**)t->cols[i]->data)[k] = p->mfgr; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_brand") == 0){
+             ((char**)t->cols[i]->data)[k] = p->brand;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_type") == 0){
+             ((char**)t->cols[i]->data)[k] = p->type;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_size") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = p->size;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_container") == 0){
+             ((char**)t->cols[i]->data)[k] = p->container;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_retailprice") == 0){
+             ((double*)t->cols[i]->data)[k] = p->retailprice;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "p_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = p->comment;
+             continue;
+         }
+         assert(false);
+   }
+    t->counter++;
+}
 
 static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 
@@ -292,16 +411,17 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 			break;
 		case SUPP:
 			mk_supp(i, &supp);
-			// append_supp(&supp, info);
+			append_supp(&supp, &(info->SUPP_INFO));
 			break;
 		case CUST:
 			mk_cust(i, &cust);
-			// append_cust(&cust, info);
+			append_cust(&cust, &(info->CUST_INFO));
 			break;
 		case PSUPP:
 		case PART:
 		case PART_PSUPP:
 			mk_part(i, &part);
+            append_part(&part, &(info->PART_INFO));
 			// append_part_psupp(&part, info);
 			break;
 		case NATION:
@@ -812,10 +932,18 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 		}
 	}
 
-    //if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
-    //    return err;
+//    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+//        return err;
+//    
+//    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
+//        return err;
 
-    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
+//    if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
+//        return err;
+//
+    //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
+    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
         return err;
 
     return NULL;

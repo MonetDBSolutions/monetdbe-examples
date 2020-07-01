@@ -25,6 +25,7 @@ main(int argc, char **argv)
 	char* err = NULL;
 	monetdbe_database mdbe = NULL;
 	monetdbe_result* result = NULL;
+	monetdbe_result* res_2 = NULL;
     
     // second argument is a string for the db directory or NULL for in-memory mode
     if (monetdbe_open(&mdbe, NULL, NULL))
@@ -37,9 +38,12 @@ main(int argc, char **argv)
 		error(err)
     fprintf(stdout, "REGION tbl %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
     
-    if ((err = monetdbe_query(mdbe, "select * from sys.nation;", &result, NULL)) != NULL)
+    if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
+        error(err)
+
+    if ((err = monetdbe_query(mdbe, "select * from sys.nation;", &res_2, NULL)) != NULL)
 		error(err)
-    fprintf(stdout, "NATION tbl %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    fprintf(stdout, "NATION tbl %zu cols and %"PRId64" rows and name %s\n", res_2->ncols, res_2->nrows, res_2->name);
 	
     if ((err = monetdbe_query(mdbe, "select * from sys.supplier;", &result, NULL)) != NULL)
 		error(err)
