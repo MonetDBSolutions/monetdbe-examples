@@ -1,3 +1,4 @@
 data/*.csv
+data/imdb/*
 build
 venv
