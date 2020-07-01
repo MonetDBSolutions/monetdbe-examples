@@ -87,7 +87,6 @@ static bool first_invocation = true;
 *
 */
 
-//monetdbe_export char* monetdbe_append(monetdbe_database dbhdl, const char* schema, const char* table, monetdbe_column **input, size_t column_count);
 tdef tdefs[] = {
     {"part.tbl", "part table", 200000, NULL, NULL, PSUPP, 0},
     {"partsupp.tbl", "partsupplier table", 200000, NULL, NULL, NONE, 0},
@@ -363,6 +362,56 @@ static void append_part(part_t* p, append_info_t* t) {
     t->counter++;
 }
 
+static void append_psupp(part_t* p, append_info_t* t) {
+    size_t k = t->counter;
+	for (size_t j = 0; j < SUPP_PER_PART; j++) {
+        for (size_t i=0; i < (t->ncols); i++) {
+             if(strcmp(t->cols[i]->name, "ps_partkey") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].partkey;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "ps_suppkey") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].suppkey;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "ps_availqty") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].qty;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "ps_supplycost") == 0){
+                 ((double*)t->cols[i]->data)[k] = p->s[j].scost;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "ps_comment") == 0){
+                 ((char**)t->cols[i]->data)[k] = p->s[j].comment;
+                 continue;
+             }
+             assert(false);
+       }
+        t->counter++;
+   }
+}
+
+//	for (size_t i = 0; i < SUPP_PER_PART; i++) {
+//		append_info.appender->BeginRow();
+//		// ps_partkey
+//		append_value(append_info, part->s[i].partkey);
+//		// ps_suppkey
+//		append_value(append_info, part->s[i].suppkey);
+//		// ps_availqty
+//		append_value(append_info, part->s[i].qty);
+//		// ps_supplycost
+//		append_decimal(append_info, part->s[i].scost);
+//		// ps_comment
+//		append_string(append_info, part->s[i].comment);
+//		append_info.appender->EndRow();
+//	}
+//	       "ps_partkey INT NOT NULL,"\
+//	       "ps_suppkey INT NOT NULL,"\
+//	       "ps_availqty INT NOT NULL,"\
+//	       "ps_supplycost DECIMAL(15,2) NOT NULL,"\
+//	       "ps_comment VARCHAR(199) NOT NULL);"
+//
 static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 
     switch (tnum) {
@@ -422,7 +471,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case PART_PSUPP:
 			mk_part(i, &part);
             append_part(&part, &(info->PART_INFO));
-			// append_part_psupp(&part, info);
+			append_psupp(&part, &(info->PSUPP_INFO));
 			break;
 		case NATION:
 			mk_nation(i, &code);
@@ -943,7 +992,9 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 //
     //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
     //    return err;
-    if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
+    //if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
+    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
         return err;
 
     return NULL;
