@@ -1161,7 +1161,6 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
         return err;
 
-
     return NULL;
 }
 

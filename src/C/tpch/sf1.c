@@ -32,7 +32,9 @@ main(int argc, char **argv)
 	    error("Failed to open database")
 
     // try load schema
-    dbgen(sf, mdbe, "sys");
+    err = dbgen(sf, mdbe, "sys");
+    if (err)
+      error(err);
     
 	if ((err = monetdbe_query(mdbe, "select * from sys.region;", &result, NULL)) != NULL)
 		error(err)
