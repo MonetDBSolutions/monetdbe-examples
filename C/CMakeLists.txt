@@ -33,3 +33,5 @@ target_link_libraries(logs
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
 add_test(run_logs logs)
+
+add_subdirectory(tpch)
