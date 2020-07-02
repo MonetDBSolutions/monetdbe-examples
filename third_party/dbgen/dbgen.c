@@ -207,13 +207,17 @@ static void append_region(code_t* c, append_info_t* t) {
     for (size_t i=0; i < (t->ncols); i++) {
          if(strcmp(t->cols[i]->name, "r_regionkey") == 0){
              ((int64_t*)t->cols[i]->data)[k] = c->code; 
+             continue;
          }
          if(strcmp(t->cols[i]->name, "r_name") == 0){
              ((char**)t->cols[i]->data)[k] = c->text; 
+             continue;
          }
          if(strcmp(t->cols[i]->name, "r_comment") == 0){
              ((char**)t->cols[i]->data)[k] = c->comment; 
+             continue;
          }
+         assert(false);
    }
     t->counter++;
 }
