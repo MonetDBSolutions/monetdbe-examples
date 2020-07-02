@@ -183,8 +183,7 @@ static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
         case monetdbe_blob: 
             return malloc(sizeof(monetdbe_data_blob)*n);
         case monetdbe_date: 
-            // TODO fix make dates work
-            return malloc(sizeof(char**)*n);
+            return malloc(sizeof(monetdbe_data_date)*n);
         case monetdbe_time:
             return malloc(sizeof(monetdbe_data_time)*n);
         case monetdbe_timestamp:
@@ -440,23 +439,6 @@ static void append_order(order_t* o, append_info_t* t) {
     t->counter++;
 }
 
-//	       "l_orderkey INT NOT NULL,"\
-//	       "l_partkey INT NOT NULL,"\
-//	       "l_suppkey INT NOT NULL,"\
-//	       "l_linenumber INT NOT NULL,"\
-//	       "l_quantity INTEGER NOT NULL,"\
-//	       "l_extendedprice DECIMAL(15,2) NOT NULL,"\
-//	       "l_discount DECIMAL(15,2) NOT NULL,"\
-//	       "l_tax DECIMAL(15,2) NOT NULL,"\
-//	       "l_returnflag VARCHAR(1) NOT NULL,"\
-//	       "l_linestatus VARCHAR(1) NOT NULL,"\
-//	       "l_shipdate DATE NOT NULL,"\
-//	       "l_commitdate DATE NOT NULL,"\
-//	       "l_receiptdate DATE NOT NULL,"\
-//	       "l_shipinstruct VARCHAR(25) NOT NULL,"\
-//	       "l_shipmode VARCHAR(10) NOT NULL,"\
-//	       "l_comment VARCHAR(44) NOT NULL)"
-//
 static void append_line(order_t* o, append_info_t* t) {
     size_t k = t->counter;
 	for (DSS_HUGE j = 0; j < o->lines; j++) {
@@ -503,17 +485,17 @@ static void append_line(order_t* o, append_info_t* t) {
              }
              if(strcmp(t->cols[i]->name, "l_shipdate") == 0){
                  // TODO fix
-                 ((char**)t->cols[i]->data)[k] = o->l[j].sdate;
+                 //((char**)t->cols[i]->data)[k] = o->l[j].sdate;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_commitdate") == 0){
                  // TODO fix
-                 ((char**)t->cols[i]->data)[k] = o->l[j].cdate;
+                 //((char**)t->cols[i]->data)[k] = o->l[j].cdate;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_receiptdate") == 0){
                  // TODO fix
-                 ((char**)t->cols[i]->data)[k] = o->l[j].rdate;
+                 //((char**)t->cols[i]->data)[k] = o->l[j].rdate;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipinstruct") == 0){
@@ -616,7 +598,8 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case ORDER_LINE:
 			mk_order(i, &o, 0);
 			append_order(&o, &(info->ORDER_INFO));
-			append_line(&o, &(info->LINE_INFO));
+            // TODO fix seg fault
+			// append_line(&o, &(info->LINE_INFO));
 			break;
 		case SUPP:
 			mk_supp(i, &supp);
@@ -847,6 +830,8 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
         (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
         (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
     };
+    // monetdbe_column* region_cols[3];
+
     region_cols[0]->type = monetdbe_int64_t;
     region_cols[1]->type = monetdbe_str;
     region_cols[2]->type = monetdbe_str;
@@ -1140,13 +1125,13 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 			gen_tbl((int)i, rowcnt, &tpch_info);
 		}
 	}
-    printf("BEGIN APPEND\n");
-//    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
-//        return err;
-//    
+    printf("BEGIN APPEND ...\n");
+    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+        return err;
+  
 //    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
 //        return err;
-
+//
 //    if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
 //        return err;
 //
@@ -1158,154 +1143,10 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     //    return err;
     //if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
     //    return err;
-    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
-        return err;
+//    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
+//        return err;
 
     return NULL;
 }
 
 
-/*
-* MAIN
-*
-* assumes the existance of getopt() to clean up the command 
-* line handling
-*/
-//int
-//main (int ac, char **av)
-//{
-//	DSS_HUGE i;
-//	
-//	table = (1 << CUST) |
-//		(1 << SUPP) |
-//		(1 << NATION) |
-//		(1 << REGION) |
-//		(1 << PART_PSUPP) |
-//		(1 << ORDER_LINE);
-//	force = 0;
-//    insert_segments=0;
-//    delete_segments=0;
-//    insert_orders_segment=0;
-//    insert_lineitem_segment=0;
-//    delete_segment=0;
-//	verbose = 0;
-//	set_seeds = 0;
-//	scale = 1;
-//	flt_scale = 1.0;
-//	updates = 0;
-//	step = -1;
-//	tdefs[ORDER].base *=
-//		ORDERS_PER_CUST;			/* have to do this after init */
-//	tdefs[LINE].base *=
-//		ORDERS_PER_CUST;			/* have to do this after init */
-//	tdefs[ORDER_LINE].base *=
-//		ORDERS_PER_CUST;			/* have to do this after init */
-//	children = 1;
-//	d_path = NULL;
-//	
-//#ifdef NO_SUPPORT
-//	signal (SIGINT, exit);
-//#endif /* NO_SUPPORT */
-//#if (defined(WIN32)&&!defined(_POSIX_))
-//	for (i = 0; i < ac; i++)
-//	{
-//		spawn_args[i] = malloc (((int)strlen (av[i]) + 1) * sizeof (char));
-//		MALLOC_CHECK (spawn_args[i]);
-//		strcpy (spawn_args[i], av[i]);
-//	}
-//	spawn_args[ac] = NULL;
-//#endif
-//	
-//	if (verbose >= 0)
-//		{
-//		fprintf (stderr,
-//			"%s Population Generator (Version %d.%d.%d)\n",
-//			NAME, VERSION, RELEASE, PATCH);
-//		fprintf (stderr, "Copyright %s %s\n", TPC, C_DATES);
-//		}
-//	
-//	load_dists ();
-//#ifdef RNG_TEST
-//	for (i=0; i <= MAX_STREAM; i++)
-//		Seed[i].nCalls = 0;
-//#endif
-//	/* have to do this after init */
-//	tdefs[NATION].base = nations.count;
-//	tdefs[REGION].base = regions.count;
-//	
-//	/* 
-//	* updates are never parallelized 
-//	*/
-//	if (updates)
-//		{
-//		/* 
-//		 * set RNG to start generating rows beyond SF=scale
-//		 */
-//		set_state (ORDER, scale, 100, 101, &i); 
-//		rowcnt = (int)(tdefs[ORDER_LINE].base / 10000 * scale * UPD_PCT);
-//		if (step > 0)
-//			{
-//			/* 
-//			 * adjust RNG for any prior update generation
-//			 */
-//	      for (i=1; i < step; i++)
-//         {
-//			sd_order(0, rowcnt);
-//			sd_line(0, rowcnt);
-//         }
-//			upd_num = step - 1;
-//			}
-//		else
-//			upd_num = 0;
-//
-//		while (upd_num < updates)
-//			{
-//			if (verbose > 0)
-//				fprintf (stderr,
-//				"Generating update pair #%d for %s",
-//				upd_num + 1, tdefs[ORDER_LINE].comment);
-//			insert_orders_segment=0;
-//			insert_lineitem_segment=0;
-//			delete_segment=0;
-//			minrow = upd_num * rowcnt + 1;
-//			gen_tbl (ORDER_LINE, minrow, rowcnt, upd_num + 1);
-//			if (verbose > 0)
-//				fprintf (stderr, "done.\n");
-//			pr_drange (ORDER_LINE, minrow, rowcnt, upd_num + 1);
-//			upd_num++;
-//			}
-//
-//		exit (0);
-//		}
-//	
-//	/**
-//	** actual data generation section starts here
-//	**/
-//
-//	/*
-//	* traverse the tables, invoking the appropriate data generation routine for any to be built
-//	*/
-//	for (i = PART; i <= REGION; i++)
-//		if (table & (1 << i))
-//		{
-//			if (children > 1 && i < NATION)
-//			{
-//				partial ((int)i, step);
-//			}
-//			else
-//			{
-//				minrow = 1;
-//				if (i < NATION)
-//					rowcnt = tdefs[i].base * scale;
-//				else
-//					rowcnt = tdefs[i].base;
-//				if (verbose > 0)
-//					fprintf (stderr, "Generating data for %s", tdefs[i].comment);
-//				gen_tbl ((int)i, minrow, rowcnt, upd_num);
-//				if (verbose > 0)
-//					fprintf (stderr, "done.\n");
-//			}
-//		}
-//			
-//		return (0);
-//}
