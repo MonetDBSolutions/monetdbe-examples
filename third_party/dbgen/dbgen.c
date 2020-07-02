@@ -183,7 +183,8 @@ static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
         case monetdbe_blob: 
             return malloc(sizeof(monetdbe_data_blob)*n);
         case monetdbe_date: 
-            return malloc(sizeof(monetdbe_data_date)*n);
+            // TODO fix make dates work
+            return malloc(sizeof(char**)*n);
         case monetdbe_time:
             return malloc(sizeof(monetdbe_data_time)*n);
         case monetdbe_timestamp:
@@ -392,26 +393,184 @@ static void append_psupp(part_t* p, append_info_t* t) {
    }
 }
 
-//	for (size_t i = 0; i < SUPP_PER_PART; i++) {
-//		append_info.appender->BeginRow();
-//		// ps_partkey
-//		append_value(append_info, part->s[i].partkey);
-//		// ps_suppkey
-//		append_value(append_info, part->s[i].suppkey);
-//		// ps_availqty
-//		append_value(append_info, part->s[i].qty);
-//		// ps_supplycost
-//		append_decimal(append_info, part->s[i].scost);
-//		// ps_comment
-//		append_string(append_info, part->s[i].comment);
-//		append_info.appender->EndRow();
-//	}
-//	       "ps_partkey INT NOT NULL,"\
-//	       "ps_suppkey INT NOT NULL,"\
-//	       "ps_availqty INT NOT NULL,"\
-//	       "ps_supplycost DECIMAL(15,2) NOT NULL,"\
-//	       "ps_comment VARCHAR(199) NOT NULL);"
+static void append_order(order_t* o, append_info_t* t) {
+    size_t k = t->counter;
+    for (size_t i=0; i < (t->ncols); i++) {
+         if(strcmp(t->cols[i]->name, "o_orderkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = o->okey;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_custkey") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = o->custkey;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_orderstatus") == 0){
+             ((char*)t->cols[i]->data)[k] = o->orderstatus; 
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_totalprice") == 0){
+             ((double*)t->cols[i]->data)[k] = o->totalprice;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_orderdate") == 0){
+             // todo fix, handle date comes as string
+             //monetdbe_data_date* dp;
+             //data_from_date(o->odate, &dp);
+             ((char**)t->cols[i]->data)[k] = o->odate;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_orderpriority") == 0){
+             ((char**)t->cols[i]->data)[k] = o->opriority;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_clerk") == 0){
+             ((char**)t->cols[i]->data)[k] = o->clerk;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_shippriority") == 0){
+             ((int64_t*)t->cols[i]->data)[k] = o->spriority;
+             continue;
+         }
+         if(strcmp(t->cols[i]->name, "o_comment") == 0){
+             ((char**)t->cols[i]->data)[k] = o->comment;
+             continue;
+         }
+         assert(false);
+   }
+    t->counter++;
+}
+
+//	       "l_orderkey INT NOT NULL,"\
+//	       "l_partkey INT NOT NULL,"\
+//	       "l_suppkey INT NOT NULL,"\
+//	       "l_linenumber INT NOT NULL,"\
+//	       "l_quantity INTEGER NOT NULL,"\
+//	       "l_extendedprice DECIMAL(15,2) NOT NULL,"\
+//	       "l_discount DECIMAL(15,2) NOT NULL,"\
+//	       "l_tax DECIMAL(15,2) NOT NULL,"\
+//	       "l_returnflag VARCHAR(1) NOT NULL,"\
+//	       "l_linestatus VARCHAR(1) NOT NULL,"\
+//	       "l_shipdate DATE NOT NULL,"\
+//	       "l_commitdate DATE NOT NULL,"\
+//	       "l_receiptdate DATE NOT NULL,"\
+//	       "l_shipinstruct VARCHAR(25) NOT NULL,"\
+//	       "l_shipmode VARCHAR(10) NOT NULL,"\
+//	       "l_comment VARCHAR(44) NOT NULL)"
 //
+static void append_line(order_t* o, append_info_t* t) {
+    size_t k = t->counter;
+	for (DSS_HUGE j = 0; j < o->lines; j++) {
+        for (size_t i=0; i < (t->ncols); i++) {
+             if(strcmp(t->cols[i]->name, "l_orderkey") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = o->l[j].okey;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_partkey") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = o->l[j].partkey;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_suppkey") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = o->l[j].suppkey;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_linenumber") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = o->l[j].lcnt;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_quantity") == 0){
+                 ((int64_t*)t->cols[i]->data)[k] = o->l[j].quantity;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_extendedprice") == 0){
+                 ((double*)t->cols[i]->data)[k] = o->l[j].eprice;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_discount") == 0){
+                 ((double*)t->cols[i]->data)[k] = o->l[j].discount;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_tax") == 0){
+                 ((double*)t->cols[i]->data)[k] = o->l[j].tax;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_returnflag") == 0){
+                 ((char*)t->cols[i]->data)[k] = o->l[j].rflag[0];
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_linestatus") == 0){
+                 ((char*)t->cols[i]->data)[k] = o->l[j].lstatus[0];
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_shipdate") == 0){
+                 // TODO fix
+                 ((char**)t->cols[i]->data)[k] = o->l[j].sdate;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_commitdate") == 0){
+                 // TODO fix
+                 ((char**)t->cols[i]->data)[k] = o->l[j].cdate;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_receiptdate") == 0){
+                 // TODO fix
+                 ((char**)t->cols[i]->data)[k] = o->l[j].rdate;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_shipinstruct") == 0){
+                 ((char**)t->cols[i]->data)[k] = o->l[j].shipinstruct;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_shipmode") == 0){
+                 ((char**)t->cols[i]->data)[k] = o->l[j].shipmode;
+                 continue;
+             }
+             if(strcmp(t->cols[i]->name, "l_comment") == 0){
+                 ((char**)t->cols[i]->data)[k] = o->l[j].comment;
+                 continue;
+             }
+             assert(false);
+       }
+       t->counter++;
+    }
+}
+	//// fill the current row with the order information
+	//for (DSS_HUGE i = 0; i < o->lines; i++) {
+	//	append_info.appender->BeginRow();
+	//	// l_orderkey
+	//	append_value(append_info, o->l[i].okey);
+	//	// l_partkey
+	//	append_value(append_info, o->l[i].partkey);
+	//	// l_suppkey
+	//	append_value(append_info, o->l[i].suppkey);
+	//	// l_linenumber
+	//	append_value(append_info, o->l[i].lcnt);
+	//	// l_quantity
+	//	append_value(append_info, o->l[i].quantity);
+	//	// l_extendedprice
+	//	append_decimal(append_info, o->l[i].eprice);
+	//	// l_discount
+	//	append_decimal(append_info, o->l[i].discount);
+	//	// l_tax
+	//	append_decimal(append_info, o->l[i].tax);
+	//	// l_returnflag
+	//	append_char(append_info, o->l[i].rflag[0]);
+	//	// l_linestatus
+	//	append_char(append_info, o->l[i].lstatus[0]);
+	//	// l_shipdate
+	//	append_date(append_info, o->l[i].sdate);
+	//	// l_commitdate
+	//	append_date(append_info, o->l[i].cdate);
+	//	// l_receiptdate
+	//	append_date(append_info, o->l[i].rdate);
+	//	// l_shipinstruct
+	//	append_string(append_info, o->l[i].shipinstruct);
+	//	// l_shipmode
+	//	append_string(append_info, o->l[i].shipmode);
+	//	// l_comment
+	//	append_string(append_info, o->l[i].comment);
+	//	append_info.appender->EndRow();
+	//}
+
 static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 
     switch (tnum) {
@@ -456,7 +615,8 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case ORDER:
 		case ORDER_LINE:
 			mk_order(i, &o, 0);
-			// append_order_line(&o, info);
+			append_order(&o, &(info->ORDER_INFO));
+			append_line(&o, &(info->LINE_INFO));
 			break;
 		case SUPP:
 			mk_supp(i, &supp);
@@ -980,7 +1140,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 			gen_tbl((int)i, rowcnt, &tpch_info);
 		}
 	}
-
+    printf("BEGIN APPEND\n");
 //    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
 //        return err;
 //    
@@ -994,8 +1154,13 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     //    return err;
     //if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
     //    return err;
-    if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
+    //if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
+    //    return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
+    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
         return err;
+
 
     return NULL;
 }
