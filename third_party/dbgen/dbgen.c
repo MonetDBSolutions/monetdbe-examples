@@ -1084,38 +1084,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
         .REGION_INFO=region_info
     };
 
-
-//#define PART 0
-//#define PSUPP 1
-//#define SUPP 2
-//#define CUST 3
-//#define ORDER 4
-//#define LINE 5
-//#define ORDER_LINE 6
-//#define PART_PSUPP 7
-//#define NATION 8
-//#define REGION 9
-	/*
-	* traverse the tables, invoking the appropriate data generation routine for any to be built
-	*/
-	//for (i = PART; i <= REGION; i++) {
-	//	if (table & (1 << i))
-	//	{
-    //        if (i < NATION)
-    //            rowcnt = tdefs[i].base * scale;
-    //        else
-    //            rowcnt = tdefs[i].base;
-    //        printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
-    //        printf("---------------\n");
-    //        if (i == REGION) {
-    //            init_info(&region_info, rowcnt); 
-    //            gen_tbl((int)i, rowcnt, &region_info);
-    //            if ((err = monetdbe_append(mdbe, "sys", "region", region_info.cols, region_info.ncols)) != NULL)
-    //                return err;
-    //        }
-	//	}
-    //}
-	for (i = PART; i <= REGION; i++) {
+    for (i = PART; i <= REGION; i++) {
 		if (table & (1 << i)) {
 			if (i < NATION) {
 				rowcnt = tdefs[i].base * scale;
