@@ -14,4 +14,6 @@ set(CMAKE_C_STANDARD 99)
 
 find_package(MonetDB CONFIG REQUIRED)
 
-add_subdirectory(src)
+add_subdirectory(python)
+add_subdirectory(C)
+add_subdirectory(notebooks)

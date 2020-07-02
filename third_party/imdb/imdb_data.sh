@@ -21,4 +21,4 @@ wget http://download.duckdb.org/imdb/role_type.csv.gz
 wget http://download.duckdb.org/imdb/schematext.sql.gz
 wget http://download.duckdb.org/imdb/source.txt
 wget http://download.duckdb.org/imdb/title.csv.gz
-mv *.gz ../../data/imdb
+mv *.gz ../data/imdb

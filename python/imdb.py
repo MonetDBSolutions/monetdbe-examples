@@ -17,17 +17,18 @@ import monetdbe
 import json
 import time 
 import sys
+import os
 
 conn = None
 cur = None
 imdb_tables = []
 imdb_ddl = []
 imdb_queries = []
-datapathprefix = "../../third_party/imdb/"
+dataprefix = "unkown"
 
 def createschema():
+    fname = dataprefix  +  "third_party/imdb/imdb_tables_ddl"
     try:
-        fname = datapathprefix  +  "imdb_tables_ddl"
         f = open(fname,"r")
         imdb_ddl = f.read().splitlines()
     except IOError as msg:
@@ -39,7 +40,7 @@ def createschema():
 
 def loaddata():
     try:
-        fname = datapathprefix  +  "imdb_table_names"
+        fname = dataprefix  +  "third_party/imdb/imdb_table_names"
         f = open(fname,"r")
         imdb_tables = json.loads(f.read())
     except IOError as msg:
@@ -48,13 +49,16 @@ def loaddata():
     
     print('loading data')
     for t in imdb_tables:
-        print(t)
-        cur.execute("COPY " + t + " FROM '" + data_file_name + "' DELIMITER ',' ESCAPE '\\';");
+        data_file_name = dataprefix + "data/imdb/" + t + ".csv.gz"
+        clk = time.time()
+        print("COPY INTO " + t + " FROM '" + data_file_name + "' DELIMITERS ',' NULL AS  '\\\\N';")
+        cur.execute("COPY INTO " + t + " FROM '" + data_file_name + "' DELIMITERS ',' NULL AS '\\\\N';")
+        print(f"LOADED {data_file_name} {time.time() - clk} ms")
 
 def readqueries():
     global imdb_queries
     try:
-        fname = datapathprefix  +  "imdb_queries"
+        fname = dataprefix  +  "third_party/imdb/imdb_queries"
         f = open(fname,"r")
     except IOError as msg:
         print(f"Could not open/read {fname}")
@@ -80,9 +84,8 @@ def runqueries():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Identify the full path to the data definitions")
-        exit(-1)
+    dataprefix =  os.getcwd()[:-10]
+    print(dataprefix)
 
     conn = monetdbe.connect(':memory:', autocommit=True)
     if not conn:
@@ -92,9 +95,9 @@ if __name__ == "__main__":
     # WRONG   conn.execute("""BEGIN TRANSACTION;""")
     cur.transaction()
     createschema()
-    # loaddata() TODO
+    loaddata() 
     readqueries()
-    runqueries()
+    # runqueries()
     cur.commit()
     # WRONG conn.execute("""COMMIT;""")
     conn.close()
