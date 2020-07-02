@@ -29,7 +29,7 @@ extern "C" {
 
 // some defines to avoid r warnings
 #define exit(status)
-#define printf(...)
+// #define printf(...)
 #define fprintf(...)
 
 #define NONE -1

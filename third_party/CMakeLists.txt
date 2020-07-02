@@ -5,6 +5,6 @@ if(NOT AMALGAMATION_BUILD)
 endif()
 
 if(NOT WIN32 AND NOT SUN)
-  add_subdirectory(imdb)
+  #add_subdirectory(imdb)
   add_subdirectory(dbgen)
 endif()
