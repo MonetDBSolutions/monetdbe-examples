@@ -1,6 +1,5 @@
 /* main driver for dss banchmark */
 
-#define _XOPEN_SOURCE
 #define DECLARER				/* EXTERN references get defined here */
 #define NO_FUNC (int (*) ()) NULL	/* to clean up tdefs */
 #define NO_LFUNC (long (*) ()) NULL		/* to clean up tdefs */
@@ -181,8 +180,8 @@ static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
         case monetdbe_double:
             return malloc(sizeof(double)*n);
         case monetdbe_str: 
-            // TODO hack FIX
-            return malloc(sizeof(char [256])*n);
+            // TODO  FIX
+            return malloc(sizeof(char**)*n);
         case monetdbe_blob: 
             return malloc(sizeof(monetdbe_data_blob)*n);
         case monetdbe_date: 
@@ -205,6 +204,16 @@ static void init_info(append_info_t* t, DSS_HUGE count) {
     }
 }
 
+static void append_str(void* buff, char* str) {
+    size_t buff_length = (buff == NULL) ? 0 : sizeof(buff);
+    size_t str_length = sizeof(str) + 1;
+    size_t out_length = buff_length + str_length;
+    char* out[out_length];
+    memcpy(out, buff, buff_length);
+    memcpy(out + buff_length, str, str_length + 1);
+    buff = out;
+}
+
 static void append_region(code_t* c, append_info_t* t) {
     size_t k = t->counter;
     for (size_t i=0; i < (t->ncols); i++) {
@@ -214,10 +223,12 @@ static void append_region(code_t* c, append_info_t* t) {
          }
          if(strcmp(t->cols[i]->name, "r_name") == 0){
              ((char**)t->cols[i]->data)[k] = strdup(c->text); 
+             //append_str(t->cols[i]->data, c->text);
              continue;
          }
          if(strcmp(t->cols[i]->name, "r_comment") == 0){
              ((char**)t->cols[i]->data)[k] = strdup(c->comment); 
+             // append_str(t->cols[i]->data, c->comment);
              continue;
          }
          assert(false);
@@ -233,7 +244,7 @@ static void append_nation(code_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "n_name") == 0){
-             ((char**)t->cols[i]->data)[k] = c->text; 
+             ((char**)t->cols[i]->data)[k] = strdup(c->text); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "n_regionkey") == 0){
@@ -241,7 +252,7 @@ static void append_nation(code_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "n_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = c->comment;
+             ((char**)t->cols[i]->data)[k] = strdup(c->comment);
              continue;
          }
          assert(false);
@@ -257,11 +268,11 @@ static void append_supp(supplier_t* s, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_name") == 0){
-             ((char**)t->cols[i]->data)[k] = s->name; 
+             ((char**)t->cols[i]->data)[k] = strdup(s->name); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_address") == 0){
-             ((char**)t->cols[i]->data)[k] = s->address; 
+             ((char**)t->cols[i]->data)[k] = strdup(s->address); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_nationkey") == 0){
@@ -269,7 +280,7 @@ static void append_supp(supplier_t* s, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_phone") == 0){
-             ((char**)t->cols[i]->data)[k] = s->phone;
+             ((char**)t->cols[i]->data)[k] = strdup(s->phone);
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_acctbal") == 0){
@@ -277,7 +288,7 @@ static void append_supp(supplier_t* s, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "s_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = s->comment;
+             ((char**)t->cols[i]->data)[k] = strdup(s->comment);
              continue;
          }
          assert(false);
@@ -293,11 +304,11 @@ static void append_cust(customer_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_name") == 0){
-             ((char**)t->cols[i]->data)[k] = c->name; 
+             ((char**)t->cols[i]->data)[k] = strdup(c->name); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_address") == 0){
-             ((char**)t->cols[i]->data)[k] = c->address; 
+             ((char**)t->cols[i]->data)[k] = strdup(c->address); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_nationkey") == 0){
@@ -305,7 +316,7 @@ static void append_cust(customer_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_phone") == 0){
-             ((char**)t->cols[i]->data)[k] = c->phone;
+             ((char**)t->cols[i]->data)[k] = strdup(c->phone);
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_acctbal") == 0){
@@ -313,11 +324,11 @@ static void append_cust(customer_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_mktsegment") == 0){
-             ((char**)t->cols[i]->data)[k] = c->mktsegment;
+             ((char**)t->cols[i]->data)[k] = strdup(c->mktsegment);
              continue;
          }
          if(strcmp(t->cols[i]->name, "c_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = c->comment;
+             ((char**)t->cols[i]->data)[k] = strdup(c->comment);
              continue;
          }
          assert(false);
@@ -333,19 +344,19 @@ static void append_part(part_t* p, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_name") == 0){
-             ((char**)t->cols[i]->data)[k] = p->name; 
+             ((char**)t->cols[i]->data)[k] = strdup(p->name); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_mfgr") == 0){
-             ((char**)t->cols[i]->data)[k] = p->mfgr; 
+             ((char**)t->cols[i]->data)[k] = strdup(p->mfgr); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_brand") == 0){
-             ((char**)t->cols[i]->data)[k] = p->brand;
+             ((char**)t->cols[i]->data)[k] = strdup(p->brand);
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_type") == 0){
-             ((char**)t->cols[i]->data)[k] = p->type;
+             ((char**)t->cols[i]->data)[k] = strdup(p->type);
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_size") == 0){
@@ -353,7 +364,7 @@ static void append_part(part_t* p, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_container") == 0){
-             ((char**)t->cols[i]->data)[k] = p->container;
+             ((char**)t->cols[i]->data)[k] = strdup(p->container);
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_retailprice") == 0){
@@ -361,7 +372,7 @@ static void append_part(part_t* p, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "p_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = p->comment;
+             ((char**)t->cols[i]->data)[k] = strdup(p->comment);
              continue;
          }
          assert(false);
@@ -371,6 +382,7 @@ static void append_part(part_t* p, append_info_t* t) {
 
 static void append_psupp(part_t* p, append_info_t* t) {
     size_t k = t->counter;
+    
 	for (size_t j = 0; j < SUPP_PER_PART; j++) {
         for (size_t i=0; i < (t->ncols); i++) {
              if(strcmp(t->cols[i]->name, "ps_partkey") == 0){
@@ -390,7 +402,8 @@ static void append_psupp(part_t* p, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_comment") == 0){
-                 ((char**)t->cols[i]->data)[k] = p->s[j].comment;
+                 if (p->s[j].comment !=NULL)
+                  ((char**)t->cols[i]->data)[k] = strdup(p->s[j].comment);
                  continue;
              }
              assert(false);
@@ -425,7 +438,7 @@ static void append_order(order_t* o, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_orderstatus") == 0){
-             ((char*)t->cols[i]->data)[k] = o->orderstatus; 
+             ((char*)t->cols[i]->data)[k] = (o->orderstatus); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_totalprice") == 0){
@@ -437,11 +450,11 @@ static void append_order(order_t* o, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_orderpriority") == 0){
-             ((char**)t->cols[i]->data)[k] = o->opriority;
+             ((char**)t->cols[i]->data)[k] = strdup(o->opriority);
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_clerk") == 0){
-             ((char**)t->cols[i]->data)[k] = o->clerk;
+             ((char**)t->cols[i]->data)[k] = strdup(o->clerk);
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_shippriority") == 0){
@@ -449,7 +462,7 @@ static void append_order(order_t* o, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = o->comment;
+             ((char**)t->cols[i]->data)[k] = strdup(o->comment);
              continue;
          }
          assert(false);
@@ -494,11 +507,11 @@ static void append_line(order_t* o, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_returnflag") == 0){
-                 ((char*)t->cols[i]->data)[k] = o->l[j].rflag[0];
+                 ((char*)t->cols[i]->data)[k] = ((o->l[j].rflag[0]));
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_linestatus") == 0){
-                 ((char*)t->cols[i]->data)[k] = o->l[j].lstatus[0];
+                 ((char*)t->cols[i]->data)[k] = (o->l[j].lstatus[0]);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipdate") == 0){
@@ -514,15 +527,15 @@ static void append_line(order_t* o, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipinstruct") == 0){
-                 ((char**)t->cols[i]->data)[k] = o->l[j].shipinstruct;
+                 ((char**)t->cols[i]->data)[k] = strdup(o->l[j].shipinstruct);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipmode") == 0){
-                 ((char**)t->cols[i]->data)[k] = o->l[j].shipmode;
+                 ((char**)t->cols[i]->data)[k] = strdup(o->l[j].shipmode);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_comment") == 0){
-                 ((char**)t->cols[i]->data)[k] = o->l[j].comment;
+                 ((char**)t->cols[i]->data)[k] = strdup(o->l[j].comment);
                  continue;
              }
              assert(false);
@@ -576,6 +589,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case ORDER_LINE:
 			mk_order(i, &o, 0);
 			append_order(&o, &(info->ORDER_INFO));
+            // TDOO FIX
 			append_line(&o, &(info->LINE_INFO));
 			break;
 		case SUPP:
@@ -941,28 +955,26 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             // rowcnt=10;
             printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
             printf("---------------\n");
-            if (i==REGION || i==NATION) {
 			init_tbl((int)i, rowcnt, &tpch_info);
 			gen_tbl((int)i, rowcnt, &tpch_info);
-            }
 		}
 	}
     printf("BEGIN APPEND ...\n");
-    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
-        return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+    //    return err;
   
     //if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
     //   return err;
 
-   // if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
-   //     return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
+    //    return err;
 
     //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
     //    return err;
-    //if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
-    //    return err;
-    //if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
-    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
+        return err;
+    if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
+        return err;
     //if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
     //    return err;
 //    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
