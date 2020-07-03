@@ -382,6 +382,7 @@ static void append_part(part_t* p, append_info_t* t) {
 
 static void append_psupp(part_t* p, append_info_t* t) {
     size_t k = t->counter;
+    
 	for (size_t j = 0; j < SUPP_PER_PART; j++) {
         for (size_t i=0; i < (t->ncols); i++) {
              if(strcmp(t->cols[i]->name, "ps_partkey") == 0){
@@ -401,7 +402,8 @@ static void append_psupp(part_t* p, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_comment") == 0){
-                 ((char**)t->cols[i]->data)[k] = strdup(p->s[j].comment);
+                 if (p->s[j].comment !=NULL)
+                  ((char**)t->cols[i]->data)[k] = strdup(p->s[j].comment);
                  continue;
              }
              assert(false);
@@ -588,7 +590,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 			mk_order(i, &o, 0);
 			append_order(&o, &(info->ORDER_INFO));
             // TDOO FIX
-			// append_line(&o, &(info->LINE_INFO));
+			append_line(&o, &(info->LINE_INFO));
 			break;
 		case SUPP:
 			mk_supp(i, &supp);
@@ -1085,14 +1087,14 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 		}
 	}
     printf("BEGIN APPEND ...\n");
-    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
-        return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+    //    return err;
   
-    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
-       return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
+    //   return err;
 
-    if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
-        return err;
+    //if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
+    //    return err;
 
     //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
     //    return err;
