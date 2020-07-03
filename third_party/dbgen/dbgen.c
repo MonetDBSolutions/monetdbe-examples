@@ -1096,10 +1096,10 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 
     //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
     //    return err;
-    //if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
-    //    return err;
-    //if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
-    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
+        return err;
+    if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
+        return err;
     //if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
     //    return err;
 //    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
