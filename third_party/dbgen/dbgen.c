@@ -801,250 +801,123 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 	/**
 	** region_append_info
 	**/
-    struct append_info_t region_info = {3, NULL, 0, false};
-    monetdbe_column* region_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    // monetdbe_column* region_cols[3];
+    monetdbe_column region_col0 = { .type = monetdbe_int64_t, .name = "r_regionkey" };
+    monetdbe_column region_col1 = { .type = monetdbe_str, .name = "r_name" };
+    monetdbe_column region_col2 = { .type = monetdbe_str, .name = "r_comment" };
+    monetdbe_column* region_cols[3] = { &region_col0, &region_col1, &region_col2 };
+    struct append_info_t region_info = { .ncols = 3, .cols = (monetdbe_column**) &region_cols, .counter = 0, .init = false};
 
-    region_cols[0]->type = monetdbe_int64_t;
-    region_cols[1]->type = monetdbe_str;
-    region_cols[2]->type = monetdbe_str;
-    region_cols[0]->name = "r_regionkey";
-    region_cols[1]->name = "r_name";
-    region_cols[2]->name = "r_comment";
-    region_info.cols = region_cols;
+    
 	/**
 	** nation_append_info
 	**/
-    struct append_info_t nation_info = {4, NULL, 0, false};
-    monetdbe_column* nation_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    nation_cols[0]->type = monetdbe_int64_t;
-    nation_cols[1]->type = monetdbe_str;
-    nation_cols[2]->type = monetdbe_int64_t;
-    nation_cols[3]->type = monetdbe_str;
-    nation_cols[0]->name = "n_nationkey";
-    nation_cols[1]->name = "n_name";
-    nation_cols[2]->name = "n_regionkey";
-    nation_cols[3]->name = "n_comment";
-    nation_info.cols = nation_cols;
+    monetdbe_column nation_col0 = { .type = monetdbe_int64_t, .name = "n_nationkey" };
+    monetdbe_column nation_col1 = { .type = monetdbe_str, .name = "n_name" };
+    monetdbe_column nation_col2 = { .type = monetdbe_int64_t, .name = "n_regionkey" };
+    monetdbe_column nation_col3 = { .type = monetdbe_str, .name = "n_comment" };
+    monetdbe_column* nation_cols[4] = { &nation_col0, &nation_col1, &nation_col2, &nation_col3 };
+    struct append_info_t nation_info = { .ncols = 4, .cols = (monetdbe_column**) &nation_cols, .counter = 0, .init = false};
+    
+
 	/**
-	**supplier_append_info
+	** supplier_append_info
 	**/
-    struct append_info_t supplier_info = {7, NULL, 0, false};
-    monetdbe_column* supplier_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    supplier_cols[0]->type = monetdbe_int64_t;
-    supplier_cols[1]->type = monetdbe_str;
-    supplier_cols[2]->type = monetdbe_str;
-    supplier_cols[3]->type = monetdbe_int64_t;
-    supplier_cols[4]->type = monetdbe_str;
-    supplier_cols[5]->type = monetdbe_double;
-    supplier_cols[6]->type = monetdbe_str;
-    supplier_cols[0]->name = "s_suppkey";
-    supplier_cols[1]->name = "s_name";
-    supplier_cols[2]->name = "s_address";
-    supplier_cols[3]->name = "s_nationkey";
-    supplier_cols[4]->name = "s_phone";
-    supplier_cols[5]->name = "s_acctbal";
-    supplier_cols[6]->name = "s_comment";
-    supplier_info.cols = supplier_cols;
+    monetdbe_column supplier_col0 = { .type = monetdbe_int64_t, .name = "s_suppkey" };
+    monetdbe_column supplier_col1 = { .type = monetdbe_str, .name = "s_name" };
+    monetdbe_column supplier_col2 = { .type = monetdbe_str, .name = "s_address" };
+    monetdbe_column supplier_col3 = { .type = monetdbe_int64_t, .name = "s_nationkey" };
+    monetdbe_column supplier_col4 = { .type = monetdbe_str, .name = "s_phone" };
+    monetdbe_column supplier_col5 = { .type = monetdbe_double, .name = "s_acctbal" };
+    monetdbe_column supplier_col6 = { .type = monetdbe_str, .name = "s_comment" };
+    monetdbe_column* supplier_cols[7] = { &supplier_col0, &supplier_col1, &supplier_col2, &supplier_col3, &supplier_col4, &supplier_col5, &supplier_col6 };
+    struct append_info_t supplier_info = { .ncols = 7, .cols = (monetdbe_column**) &supplier_cols, .counter = 0, .init = false};
+
     
 	/**
-	**supplier_append_info
+	** customer_append_info
 	**/
-    struct append_info_t customer_info = {8, NULL, 0, false};
-    monetdbe_column* customer_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    customer_cols[0]->type = monetdbe_int64_t;
-    customer_cols[1]->type = monetdbe_str;
-    customer_cols[2]->type = monetdbe_str;
-    customer_cols[3]->type = monetdbe_int64_t;
-    customer_cols[4]->type = monetdbe_str;
-    customer_cols[5]->type = monetdbe_double;
-    customer_cols[6]->type = monetdbe_str;
-    customer_cols[7]->type = monetdbe_str;
-    customer_cols[0]->name ="c_custkey"; 
-    customer_cols[1]->name ="c_name"; 
-    customer_cols[2]->name ="c_address"; 
-    customer_cols[3]->name ="c_nationkey"; 
-    customer_cols[4]->name ="c_phone"; 
-    customer_cols[5]->name ="c_acctbal"; 
-    customer_cols[6]->name ="c_mktsegment"; 
-    customer_cols[7]->name ="c_comment"; 
-    customer_info.cols = customer_cols;
-
-	/**
-	**part_append_info
-	**/
-    struct append_info_t part_info = {9, NULL, 0, false};
-    monetdbe_column* part_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    part_cols[0]->type = monetdbe_int64_t;
-    part_cols[1]->type = monetdbe_str;
-    part_cols[2]->type = monetdbe_str;
-    part_cols[3]->type = monetdbe_str;
-    part_cols[4]->type = monetdbe_str;
-    part_cols[5]->type = monetdbe_int64_t;
-    part_cols[6]->type = monetdbe_str;
-    part_cols[7]->type = monetdbe_double;
-    part_cols[8]->type = monetdbe_str;
-    part_cols[0]->name = "p_partkey";  
-    part_cols[1]->name = "p_name"; 
-    part_cols[2]->name = "p_mfgr"; 
-    part_cols[3]->name = "p_brand"; 
-    part_cols[4]->name = "p_type"; 
-    part_cols[5]->name = "p_size"; 
-    part_cols[6]->name = "p_container"; 
-    part_cols[7]->name = "p_retailprice"; 
-    part_cols[8]->name = "p_comment"; 
-    part_info.cols = part_cols;
+    monetdbe_column customer_col0 = { .type = monetdbe_int64_t, .name = "c_custkey" };
+    monetdbe_column customer_col1 = { .type = monetdbe_str, .name = "c_name" };
+    monetdbe_column customer_col2 = { .type = monetdbe_str, .name = "c_address" };
+    monetdbe_column customer_col3 = { .type = monetdbe_int64_t, .name = "c_nationkey" };
+    monetdbe_column customer_col4 = { .type = monetdbe_str, .name = "c_phone" };
+    monetdbe_column customer_col5 = { .type = monetdbe_double, .name = "c_acctbal" };
+    monetdbe_column customer_col6 = { .type = monetdbe_str, .name = "c_mktsegment" };
+    monetdbe_column customer_col7 = { .type = monetdbe_str, .name = "c_comment" };
+    monetdbe_column* customer_cols[8] = { &customer_col0, &customer_col1, &customer_col2, &customer_col3, 
+                                        &customer_col4, &customer_col5, &customer_col6, &customer_col7 };
+    struct append_info_t customer_info = { .ncols = 8, .cols = (monetdbe_column**) &customer_cols, .counter = 0, .init = false};
 
 
 	/**
-	**psupp_append_info
+	** part_append_info
 	**/
-    struct append_info_t psupp_info = {5, NULL, 0, false};
-    monetdbe_column* psupp_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    psupp_cols[0]->type = monetdbe_int64_t;
-    psupp_cols[1]->type = monetdbe_int64_t;
-    psupp_cols[2]->type = monetdbe_int64_t;
-    psupp_cols[3]->type = monetdbe_double;
-    psupp_cols[4]->type = monetdbe_str;
-    psupp_cols[0]->name = "ps_partkey";
-    psupp_cols[1]->name = "ps_suppkey";
-    psupp_cols[2]->name = "ps_availqty";
-    psupp_cols[3]->name = "ps_supplycost";
-    psupp_cols[4]->name = "ps_comment";
-    psupp_info.cols = psupp_cols;
+    monetdbe_column part_col0 = { .type = monetdbe_int64_t, .name = "p_partkey" };
+    monetdbe_column part_col1 = { .type = monetdbe_str, .name = "p_name" };
+    monetdbe_column part_col2 = { .type = monetdbe_str, .name = "p_mfgr" };
+    monetdbe_column part_col3 = { .type = monetdbe_str, .name = "p_brand" };
+    monetdbe_column part_col4 = { .type = monetdbe_str, .name = "p_type" };
+    monetdbe_column part_col5 = { .type = monetdbe_int64_t, .name = "p_size" };
+    monetdbe_column part_col6 = { .type = monetdbe_str, .name = "p_container" };
+    monetdbe_column part_col7 = { .type = monetdbe_double, .name = "p_retailprice" };
+    monetdbe_column part_col8 = { .type = monetdbe_str, .name = "p_comment" };
+    monetdbe_column* part_cols[9] = { &part_col0, &part_col1, &part_col2, &part_col3, &part_col4, &part_col5, &part_col6, &part_col7, &part_col8 };
+    struct append_info_t part_info = { .ncols = 9, .cols = (monetdbe_column**) &part_cols, .counter = 0, .init = false};
+
 
 	/**
-	**orders_append_info
+	** psupp_append_info
 	**/
-    struct append_info_t orders_info = {9, NULL, 0, false};
-    monetdbe_column* orders_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_date)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    orders_cols[0]->type = monetdbe_int64_t;
-    orders_cols[1]->type = monetdbe_int64_t;
-    orders_cols[2]->type = monetdbe_str;
-    orders_cols[3]->type = monetdbe_double;
-    orders_cols[4]->type = monetdbe_date;
-    orders_cols[5]->type = monetdbe_str;
-    orders_cols[6]->type = monetdbe_str;
-    orders_cols[7]->type = monetdbe_int64_t;
-    orders_cols[8]->type = monetdbe_str;
-    orders_cols[0]->name = "o_orderkey";
-    orders_cols[1]->name = "o_custkey";
-    orders_cols[2]->name = "o_orderstatus";
-    orders_cols[3]->name = "o_totalprice";
-    orders_cols[4]->name = "o_orderdate";
-    orders_cols[5]->name = "o_orderpriority";
-    orders_cols[6]->name = "o_clerk";
-    orders_cols[7]->name = "o_shippriority";
-    orders_cols[8]->name = "o_comment";
-    orders_info.cols = orders_cols;
+    monetdbe_column psupp_col0 = { .type = monetdbe_int64_t, .name = "ps_partkey" };
+    monetdbe_column psupp_col1 = { .type = monetdbe_int64_t, .name = "ps_suppkey" };
+    monetdbe_column psupp_col2 = { .type = monetdbe_int64_t, .name = "ps_availqty" };
+    monetdbe_column psupp_col3 = { .type = monetdbe_double, .name = "ps_supplycost" };
+    monetdbe_column psupp_col4 = { .type = monetdbe_str, .name = "ps_comment" };
+    monetdbe_column* psupp_cols[5] = { &psupp_col0, &psupp_col1, &psupp_col2, &psupp_col3, &psupp_col4 };
+    struct append_info_t psupp_info = { .ncols = 5, .cols = (monetdbe_column**) &psupp_cols, .counter = 0, .init = false};
+
 
 	/**
-	**lineitem_append_info
+	**  orders_append_info
 	**/
-    struct append_info_t lineitem_info = {16, NULL, 0, false};
-    monetdbe_column* lineitem_cols[] = {
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_int64_t)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_double)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_date)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_date)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_date)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str)),
-        (monetdbe_column*) malloc(sizeof(monetdbe_column_str))
-    };
-    lineitem_cols[0]->type = monetdbe_int64_t;
-    lineitem_cols[1]->type = monetdbe_int64_t;
-    lineitem_cols[2]->type = monetdbe_int64_t;
-    lineitem_cols[3]->type = monetdbe_int64_t;
-    lineitem_cols[4]->type = monetdbe_int64_t;
-    lineitem_cols[5]->type = monetdbe_double; 
-    lineitem_cols[6]->type = monetdbe_double; 
-    lineitem_cols[7]->type = monetdbe_double; 
-    lineitem_cols[8]->type = monetdbe_str;
-    lineitem_cols[9]->type = monetdbe_str;
-    lineitem_cols[10]->type = monetdbe_date;
-    lineitem_cols[11]->type = monetdbe_date;
-    lineitem_cols[12]->type = monetdbe_date;
-    lineitem_cols[13]->type = monetdbe_str;
-    lineitem_cols[14]->type = monetdbe_str;
-    lineitem_cols[15]->type = monetdbe_str;
-    lineitem_cols[0]->name = "l_orderkey";
-    lineitem_cols[1]->name = "l_partkey";
-    lineitem_cols[2]->name = "l_suppkey";
-    lineitem_cols[3]->name = "l_linenumber";
-    lineitem_cols[4]->name = "l_quantity";
-    lineitem_cols[5]->name = "l_extendedprice";
-    lineitem_cols[6]->name = "l_discount";
-    lineitem_cols[7]->name = "l_tax";
-    lineitem_cols[8]->name = "l_returnflag";
-    lineitem_cols[9]->name = "l_linestatus";
-    lineitem_cols[10]->name = "l_shipdate";
-    lineitem_cols[11]->name = "l_commitdate";
-    lineitem_cols[12]->name = "l_receiptdate";
-    lineitem_cols[13]->name = "l_shipinstruct";
-    lineitem_cols[14]->name = "l_shipmode";
-    lineitem_cols[15]->name = "l_comment";
-    lineitem_info.cols = lineitem_cols;
+    monetdbe_column orders_col0 = { .type = monetdbe_int64_t, .name = "o_orderkey" };
+    monetdbe_column orders_col1 = { .type = monetdbe_int64_t, .name = "o_custkey" };
+    monetdbe_column orders_col2 = { .type = monetdbe_str, .name = "o_orderstatus" };
+    monetdbe_column orders_col3 = { .type = monetdbe_double, .name = "o_totalprice" };
+    monetdbe_column orders_col4 = { .type = monetdbe_date, .name = "o_orderdate" };
+    monetdbe_column orders_col5 = { .type = monetdbe_str, .name = "o_orderpriority" };
+    monetdbe_column orders_col6 = { .type = monetdbe_str, .name = "o_clerk" };
+    monetdbe_column orders_col7 = { .type = monetdbe_int64_t, .name = "o_shippriority" };
+    monetdbe_column orders_col8 = { .type = monetdbe_str, .name = "o_comment" };
+    monetdbe_column* orders_cols[9] = { &orders_col0, &orders_col1, &orders_col2, &orders_col3, &orders_col4, &orders_col5, 
+                                        &orders_col6, &orders_col7, &orders_col8 };
+    struct append_info_t orders_info = { .ncols = 9, .cols = (monetdbe_column**) &orders_cols, .counter = 0, .init = false};
+
+
+	/**
+	** lineitem_append_info
+	**/
+    monetdbe_column lineitem_col0 = { .type = monetdbe_int64_t, .name = "o_orderkey" };
+    monetdbe_column lineitem_col1 = { .type = monetdbe_int64_t, .name = "o_custkey" };
+    monetdbe_column lineitem_col2 = { .type = monetdbe_int64_t, .name = "o_orderstatus" };
+    monetdbe_column lineitem_col3 = { .type = monetdbe_int64_t, .name = "o_totalprice" };
+    monetdbe_column lineitem_col4 = { .type = monetdbe_int64_t, .name = "o_totalprice" };
+    monetdbe_column lineitem_col5 = { .type = monetdbe_double, .name = "o_totalprice" };
+    monetdbe_column lineitem_col6 = { .type = monetdbe_double, .name = "o_totalprice" };
+    monetdbe_column lineitem_col7 = { .type = monetdbe_double, .name = "o_totalprice" };
+    monetdbe_column lineitem_col8 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column lineitem_col9 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column lineitem_col10 = { .type = monetdbe_date, .name = "o_totalprice" };
+    monetdbe_column lineitem_col11 = { .type = monetdbe_date, .name = "o_totalprice" };
+    monetdbe_column lineitem_col12 = { .type = monetdbe_date, .name = "o_totalprice" };
+    monetdbe_column lineitem_col13 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column lineitem_col14 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column lineitem_col15 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column* lineitem_cols[16] = { &lineitem_col0, &lineitem_col1, &lineitem_col2, &lineitem_col3, &lineitem_col4, 
+                                        &lineitem_col5, &lineitem_col6, &lineitem_col7, &lineitem_col8, &lineitem_col9, &lineitem_col10,
+                                        &lineitem_col11, &lineitem_col12, &lineitem_col13, &lineitem_col14, &lineitem_col15 };
+    struct append_info_t lineitem_info = { .ncols = 16, .cols = (monetdbe_column**) &lineitem_cols, .counter = 0, .init = false};
+
 
     struct tpch_info_t tpch_info = {
         .PART_INFO=part_info, 
@@ -1098,5 +971,3 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 
     return NULL;
 }
-
-
