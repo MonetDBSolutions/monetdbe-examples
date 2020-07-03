@@ -1,5 +1,6 @@
 /* main driver for dss banchmark */
 
+#define _XOPEN_SOURCE
 #define DECLARER				/* EXTERN references get defined here */
 #define NO_FUNC (int (*) ()) NULL	/* to clean up tdefs */
 #define NO_LFUNC (long (*) ()) NULL		/* to clean up tdefs */
@@ -18,6 +19,7 @@
 #include <signal.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #ifdef HP
 #include <strings.h>
 #endif
@@ -179,7 +181,8 @@ static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
         case monetdbe_double:
             return malloc(sizeof(double)*n);
         case monetdbe_str: 
-            return malloc(sizeof(char**)*n);
+            // TODO hack FIX
+            return malloc(sizeof(char [256])*n);
         case monetdbe_blob: 
             return malloc(sizeof(monetdbe_data_blob)*n);
         case monetdbe_date: 
@@ -396,6 +399,20 @@ static void append_psupp(part_t* p, append_info_t* t) {
    }
 }
 
+static monetdbe_data_date d_conv(char* date) {
+    char* err=NULL;
+    int year,month,day;
+    sscanf(date, "%d-%d-%d", &year, &month, &day);
+   // struct tm tm;
+   // if((err=strptime(date, "%Y-%M-%d", &tm)) == NULL){
+   //     fprintf(stderr, "strptime err with date %s", date);
+   //     exit(1);
+   // }
+   // monetdbe_data_date d = {.day=tm.tm_mday, .month=tm.tm_mon, .year=tm.tm_year};
+    monetdbe_data_date d = {.day=day, .month=month, .year=year};
+    return d;
+}
+
 static void append_order(order_t* o, append_info_t* t) {
     size_t k = t->counter;
     for (size_t i=0; i < (t->ncols); i++) {
@@ -416,10 +433,7 @@ static void append_order(order_t* o, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_orderdate") == 0){
-             // todo fix, handle date comes as string
-             //monetdbe_data_date* dp;
-             //data_from_date(o->odate, &dp);
-             ((char**)t->cols[i]->data)[k] = o->odate;
+             ((monetdbe_data_date*)t->cols[i]->data)[k] = d_conv(o->odate);
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_orderpriority") == 0){
@@ -488,18 +502,15 @@ static void append_line(order_t* o, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipdate") == 0){
-                 // TODO fix
-                 //((char**)t->cols[i]->data)[k] = o->l[j].sdate;
+                 ((monetdbe_data_date*)t->cols[i]->data)[k] = d_conv(o->l[j].sdate);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_commitdate") == 0){
-                 // TODO fix
-                 //((char**)t->cols[i]->data)[k] = o->l[j].cdate;
+                 ((monetdbe_data_date*)t->cols[i]->data)[k] = d_conv(o->l[j].cdate);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_receiptdate") == 0){
-                 // TODO fix
-                 //((char**)t->cols[i]->data)[k] = o->l[j].rdate;
+                 ((monetdbe_data_date*)t->cols[i]->data)[k] = d_conv(o->l[j].rdate);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipinstruct") == 0){
@@ -519,43 +530,6 @@ static void append_line(order_t* o, append_info_t* t) {
        t->counter++;
     }
 }
-	//// fill the current row with the order information
-	//for (DSS_HUGE i = 0; i < o->lines; i++) {
-	//	append_info.appender->BeginRow();
-	//	// l_orderkey
-	//	append_value(append_info, o->l[i].okey);
-	//	// l_partkey
-	//	append_value(append_info, o->l[i].partkey);
-	//	// l_suppkey
-	//	append_value(append_info, o->l[i].suppkey);
-	//	// l_linenumber
-	//	append_value(append_info, o->l[i].lcnt);
-	//	// l_quantity
-	//	append_value(append_info, o->l[i].quantity);
-	//	// l_extendedprice
-	//	append_decimal(append_info, o->l[i].eprice);
-	//	// l_discount
-	//	append_decimal(append_info, o->l[i].discount);
-	//	// l_tax
-	//	append_decimal(append_info, o->l[i].tax);
-	//	// l_returnflag
-	//	append_char(append_info, o->l[i].rflag[0]);
-	//	// l_linestatus
-	//	append_char(append_info, o->l[i].lstatus[0]);
-	//	// l_shipdate
-	//	append_date(append_info, o->l[i].sdate);
-	//	// l_commitdate
-	//	append_date(append_info, o->l[i].cdate);
-	//	// l_receiptdate
-	//	append_date(append_info, o->l[i].rdate);
-	//	// l_shipinstruct
-	//	append_string(append_info, o->l[i].shipinstruct);
-	//	// l_shipmode
-	//	append_string(append_info, o->l[i].shipmode);
-	//	// l_comment
-	//	append_string(append_info, o->l[i].comment);
-	//	append_info.appender->EndRow();
-	//}
 
 static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 
@@ -602,8 +576,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case ORDER_LINE:
 			mk_order(i, &o, 0);
 			append_order(&o, &(info->ORDER_INFO));
-            // TODO fix seg fault
-			// append_line(&o, &(info->LINE_INFO));
+			append_line(&o, &(info->LINE_INFO));
 			break;
 		case SUPP:
 			mk_supp(i, &supp);
@@ -1092,22 +1065,25 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 				rowcnt = tdefs[i].base;
 			}
 			// actually doing something
+            // rowcnt=10;
             printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
             printf("---------------\n");
+            if (i==REGION || i==NATION) {
 			init_tbl((int)i, rowcnt, &tpch_info);
 			gen_tbl((int)i, rowcnt, &tpch_info);
+            }
 		}
 	}
     printf("BEGIN APPEND ...\n");
     if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
         return err;
   
-//    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
-//        return err;
-//
-//    if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
-//        return err;
-//
+    //if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
+    //   return err;
+
+   // if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
+   //     return err;
+
     //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
     //    return err;
     //if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
