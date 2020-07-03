@@ -213,11 +213,11 @@ static void append_region(code_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "r_name") == 0){
-             ((char**)t->cols[i]->data)[k] = c->text; 
+             ((char**)t->cols[i]->data)[k] = strdup(c->text); 
              continue;
          }
          if(strcmp(t->cols[i]->name, "r_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = c->comment; 
+             ((char**)t->cols[i]->data)[k] = strdup(c->comment); 
              continue;
          }
          assert(false);
