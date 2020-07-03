@@ -382,7 +382,8 @@ static void append_part(part_t* p, append_info_t* t) {
 
 static void append_psupp(part_t* p, append_info_t* t) {
     size_t k = t->counter;
-    
+    size_t check = SUPP_PER_PART;
+    assert((sizeof(p->s)/sizeof(partsupp_t)) == SUPP_PER_PART);
 	for (size_t j = 0; j < SUPP_PER_PART; j++) {
         for (size_t i=0; i < (t->ncols); i++) {
              if(strcmp(t->cols[i]->name, "ps_partkey") == 0){
@@ -390,7 +391,8 @@ static void append_psupp(part_t* p, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_suppkey") == 0){
-                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].suppkey;
+                 if (p->s[j].suppkey)
+                    ((int64_t*)t->cols[i]->data)[k] = p->s[j].suppkey;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_availqty") == 0){
@@ -398,7 +400,8 @@ static void append_psupp(part_t* p, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_supplycost") == 0){
-                 ((double*)t->cols[i]->data)[k] = p->s[j].scost;
+                 if (p->s[j].scost)
+                    ((double*)t->cols[i]->data)[k] = p->s[j].scost;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_comment") == 0){
@@ -604,7 +607,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case PART:
 		case PART_PSUPP:
 			mk_part(i, &part);
-            append_part(&part, &(info->PART_INFO));
+            //append_part(&part, &(info->PART_INFO));
 			append_psupp(&part, &(info->PSUPP_INFO));
 			break;
 		case NATION:
@@ -955,8 +958,11 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             // rowcnt=10;
             printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
             printf("---------------\n");
+            rowcnt=10;
+            if (i == PART_PSUPP) {
 			init_tbl((int)i, rowcnt, &tpch_info);
 			gen_tbl((int)i, rowcnt, &tpch_info);
+            }
 		}
 	}
     printf("BEGIN APPEND ...\n");
