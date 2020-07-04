@@ -740,7 +740,9 @@ char*  get_table_name(int num) {
 	       "l_comment VARCHAR(44) NOT NULL)"
 
 char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
+    clock_t begin_gen = clock();
     char* err= NULL;
+
     if((err=monetdbe_query(mdbe, REGION_SCHEMA("sys"), NULL, NULL)) != NULL)
         return err;
     if((err=monetdbe_query(mdbe, NATION_SCHEMA("sys"), NULL, NULL)) != NULL)
@@ -968,6 +970,8 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
 			gen_tbl((int)i, rowcnt, &tpch_info);
 		}
 	}
+    
+    clock_t end_gen = clock();
     printf("BEGIN APPEND ...\n");
     if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
         return err;
@@ -989,5 +993,8 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
         return err;
 
+    clock_t end_load = clock();
+    double time_spent=0.0;
+    printf("appending took %f sec\n\n", (double)(end_load - end_gen)/CLOCKS_PER_SEC);
     return NULL;
 }
