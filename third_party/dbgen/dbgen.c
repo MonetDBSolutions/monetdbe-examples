@@ -427,6 +427,13 @@ static monetdbe_data_date d_conv(char* date) {
     return d;
 }
 
+static char* char_to_str(char c){
+    char res[2];
+    res[0]=c;
+    res[1]='\0'; 
+    return strdup(res);
+}
+
 static void append_order(order_t* o, append_info_t* t) {
     size_t k = t->counter;
     for (size_t i=0; i < (t->ncols); i++) {
@@ -439,7 +446,8 @@ static void append_order(order_t* o, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_orderstatus") == 0){
-             ((char*)t->cols[i]->data)[k] = (o->orderstatus); 
+             char* orderstatus = char_to_str(o->orderstatus);
+             ((char**)t->cols[i]->data)[k] = orderstatus; 
              continue;
          }
          if(strcmp(t->cols[i]->name, "o_totalprice") == 0){
@@ -508,11 +516,11 @@ static void append_line(order_t* o, append_info_t* t) {
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_returnflag") == 0){
-                 ((char*)t->cols[i]->data)[k] = ((o->l[j].rflag[0]));
+                 ((char**)t->cols[i]->data)[k] = char_to_str((o->l[j].rflag[0]));
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_linestatus") == 0){
-                 ((char*)t->cols[i]->data)[k] = (o->l[j].lstatus[0]);
+                 ((char**)t->cols[i]->data)[k] = char_to_str(o->l[j].lstatus[0]);
                  continue;
              }
              if(strcmp(t->cols[i]->name, "l_shipdate") == 0){
@@ -956,10 +964,8 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             // rowcnt=10;
             printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
             printf("---------------\n");
-            if(i==PART_PSUPP || i==NATION || i==REGION){
 			init_tbl((int)i, rowcnt, &tpch_info);
 			gen_tbl((int)i, rowcnt, &tpch_info);
-            }
 		}
 	}
     printf("BEGIN APPEND ...\n");
