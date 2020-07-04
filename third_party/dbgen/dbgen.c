@@ -180,8 +180,7 @@ static void* Zalloc(monetdbe_types t, DSS_HUGE n) {
         case monetdbe_double:
             return malloc(sizeof(double)*n);
         case monetdbe_str: 
-            // TODO  FIX
-            return malloc(sizeof(char**)*n);
+            return malloc(sizeof(char*)*n);
         case monetdbe_blob: 
             return malloc(sizeof(monetdbe_data_blob)*n);
         case monetdbe_date: 
@@ -204,15 +203,14 @@ static void init_info(append_info_t* t, DSS_HUGE count) {
     }
 }
 
-static void append_str(void* buff, char* str) {
-    size_t buff_length = (buff == NULL) ? 0 : sizeof(buff);
-    size_t str_length = sizeof(str) + 1;
-    size_t out_length = buff_length + str_length;
-    char* out[out_length];
-    memcpy(out, buff, buff_length);
-    memcpy(out + buff_length, str, str_length + 1);
-    buff = out;
-}
+//static void* append_str(char* buff, const char* str) {
+//    size_t buff_length = (buff == NULL) ? 0 : strlen(buff);
+//    size_t str_length = strlen(str) + 1;
+//    size_t out_length = buff_length + str_length;
+//    char out[out_length];
+//    memcpy(out, buff, buff_length);
+//    return memcpy(out + buff_length, str, str_length + 1);
+//}
 
 static void append_region(code_t* c, append_info_t* t) {
     size_t k = t->counter;
@@ -222,18 +220,20 @@ static void append_region(code_t* c, append_info_t* t) {
              continue;
          }
          if(strcmp(t->cols[i]->name, "r_name") == 0){
-             ((char**)t->cols[i]->data)[k] = strdup(c->text); 
-             //append_str(t->cols[i]->data, c->text);
+             char* name = strdup(c->text);
+             if (name != NULL)
+                ((char**)t->cols[i]->data)[k] = name; 
              continue;
          }
          if(strcmp(t->cols[i]->name, "r_comment") == 0){
-             ((char**)t->cols[i]->data)[k] = strdup(c->comment); 
-             // append_str(t->cols[i]->data, c->comment);
+             char* comment = strdup(c->comment);
+             if (comment != NULL)
+                ((char**)t->cols[i]->data)[k] = comment; 
              continue;
          }
          assert(false);
    }
-    t->counter++;
+   t->counter++;
 }
 
 static void append_nation(code_t* c, append_info_t* t) {
@@ -387,30 +387,28 @@ static void append_psupp(part_t* p, append_info_t* t) {
 	for (size_t j = 0; j < SUPP_PER_PART; j++) {
         for (size_t i=0; i < (t->ncols); i++) {
              if(strcmp(t->cols[i]->name, "ps_partkey") == 0){
-                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].partkey;
+                ((int64_t*)t->cols[i]->data)[k] = p->s[j].partkey;
                  continue;
              }
              if(strcmp(t->cols[i]->name, "ps_suppkey") == 0){
-                 if (p->s[j].suppkey)
-                    ((int64_t*)t->cols[i]->data)[k] = p->s[j].suppkey;
-                 continue;
+                ((int64_t*)t->cols[i]->data)[k] = p->s[j].suppkey;
+                continue;
              }
              if(strcmp(t->cols[i]->name, "ps_availqty") == 0){
-                 ((int64_t*)t->cols[i]->data)[k] = p->s[j].qty;
-                 continue;
+                ((int64_t*)t->cols[i]->data)[k] = p->s[j].qty;
+                continue;
              }
              if(strcmp(t->cols[i]->name, "ps_supplycost") == 0){
-                 if (p->s[j].scost)
-                    ((double*)t->cols[i]->data)[k] = p->s[j].scost;
-                 continue;
+                ((double*)t->cols[i]->data)[k] = p->s[j].scost;
+                continue;
              }
              if(strcmp(t->cols[i]->name, "ps_comment") == 0){
-                 if (p->s[j].comment !=NULL)
-                  ((char**)t->cols[i]->data)[k] = strdup(p->s[j].comment);
-                 continue;
+                ((char**)t->cols[i]->data)[k] = strdup(p->s[j].comment);
+                continue;
              }
              assert(false);
        }
+        k++;
         t->counter++;
    }
 }
@@ -543,6 +541,7 @@ static void append_line(order_t* o, append_info_t* t) {
              }
              assert(false);
        }
+       k++;
        t->counter++;
     }
 }
@@ -554,7 +553,7 @@ static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
         case ORDER:
         case ORDER_LINE:
             init_info(&(info->ORDER_INFO), count);
-            init_info(&(info->LINE_INFO), count);
+            init_info(&(info->LINE_INFO), count*O_LCNT_MAX);
             break;
         case SUPP:
             init_info(&(info->SUPP_INFO), count);
@@ -565,8 +564,8 @@ static void init_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
         case PSUPP:
         case PART:
         case PART_PSUPP:
-            init_info(&(info->PSUPP_INFO), count);
             init_info(&(info->PART_INFO), count);
+            init_info(&(info->PSUPP_INFO), count*SUPP_PER_PART);
             break;
         case NATION:
             init_info(&(info->NATION_INFO), count);
@@ -607,7 +606,7 @@ static void gen_tbl(int tnum, DSS_HUGE count, tpch_info_t* info) {
 		case PART:
 		case PART_PSUPP:
 			mk_part(i, &part);
-            //append_part(&part, &(info->PART_INFO));
+            append_part(&part, &(info->PART_INFO));
 			append_psupp(&part, &(info->PSUPP_INFO));
 			break;
 		case NATION:
@@ -910,26 +909,25 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
                                         &orders_col6, &orders_col7, &orders_col8 };
     struct append_info_t orders_info = { .ncols = 9, .cols = (monetdbe_column**) &orders_cols, .counter = 0, .init = false};
 
-
 	/**
 	** lineitem_append_info
 	**/
-    monetdbe_column lineitem_col0 = { .type = monetdbe_int64_t, .name = "o_orderkey" };
-    monetdbe_column lineitem_col1 = { .type = monetdbe_int64_t, .name = "o_custkey" };
-    monetdbe_column lineitem_col2 = { .type = monetdbe_int64_t, .name = "o_orderstatus" };
-    monetdbe_column lineitem_col3 = { .type = monetdbe_int64_t, .name = "o_totalprice" };
-    monetdbe_column lineitem_col4 = { .type = monetdbe_int64_t, .name = "o_totalprice" };
-    monetdbe_column lineitem_col5 = { .type = monetdbe_double, .name = "o_totalprice" };
-    monetdbe_column lineitem_col6 = { .type = monetdbe_double, .name = "o_totalprice" };
-    monetdbe_column lineitem_col7 = { .type = monetdbe_double, .name = "o_totalprice" };
-    monetdbe_column lineitem_col8 = { .type = monetdbe_str, .name = "o_totalprice" };
-    monetdbe_column lineitem_col9 = { .type = monetdbe_str, .name = "o_totalprice" };
-    monetdbe_column lineitem_col10 = { .type = monetdbe_date, .name = "o_totalprice" };
-    monetdbe_column lineitem_col11 = { .type = monetdbe_date, .name = "o_totalprice" };
-    monetdbe_column lineitem_col12 = { .type = monetdbe_date, .name = "o_totalprice" };
-    monetdbe_column lineitem_col13 = { .type = monetdbe_str, .name = "o_totalprice" };
-    monetdbe_column lineitem_col14 = { .type = monetdbe_str, .name = "o_totalprice" };
-    monetdbe_column lineitem_col15 = { .type = monetdbe_str, .name = "o_totalprice" };
+    monetdbe_column lineitem_col0 = { .type = monetdbe_int64_t, .name = "l_orderkey" };
+    monetdbe_column lineitem_col1 = { .type = monetdbe_int64_t, .name = "l_partkey" };
+    monetdbe_column lineitem_col2 = { .type = monetdbe_int64_t, .name = "l_suppkey" };
+    monetdbe_column lineitem_col3 = { .type = monetdbe_int64_t, .name = "l_linenumber" };
+    monetdbe_column lineitem_col4 = { .type = monetdbe_int64_t, .name = "l_quantity" };
+    monetdbe_column lineitem_col5 = { .type = monetdbe_double, .name = "l_extendedprice" };
+    monetdbe_column lineitem_col6 = { .type = monetdbe_double, .name = "l_discount" };
+    monetdbe_column lineitem_col7 = { .type = monetdbe_double, .name = "l_tax" };
+    monetdbe_column lineitem_col8 = { .type = monetdbe_str, .name = "l_returnflag" };
+    monetdbe_column lineitem_col9 = { .type = monetdbe_str, .name = "l_linestatus" };
+    monetdbe_column lineitem_col10 = { .type = monetdbe_date, .name = "l_shipdate" };
+    monetdbe_column lineitem_col11 = { .type = monetdbe_date, .name = "l_commitdate" };
+    monetdbe_column lineitem_col12 = { .type = monetdbe_date, .name = "l_receiptdate" };
+    monetdbe_column lineitem_col13 = { .type = monetdbe_str, .name = "l_shipinstruct" };
+    monetdbe_column lineitem_col14 = { .type = monetdbe_str, .name = "l_shipmode" };
+    monetdbe_column lineitem_col15 = { .type = monetdbe_str, .name = "l_comment" };
     monetdbe_column* lineitem_cols[16] = { &lineitem_col0, &lineitem_col1, &lineitem_col2, &lineitem_col3, &lineitem_col4, 
                                         &lineitem_col5, &lineitem_col6, &lineitem_col7, &lineitem_col8, &lineitem_col9, &lineitem_col10,
                                         &lineitem_col11, &lineitem_col12, &lineitem_col13, &lineitem_col14, &lineitem_col15 };
@@ -958,34 +956,32 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             // rowcnt=10;
             printf("%s, rowcount=%d\n", get_table_name(i), rowcnt);
             printf("---------------\n");
-            rowcnt=10;
-            if (i == PART_PSUPP) {
+            if(i==PART_PSUPP || i==NATION || i==REGION){
 			init_tbl((int)i, rowcnt, &tpch_info);
 			gen_tbl((int)i, rowcnt, &tpch_info);
             }
 		}
 	}
     printf("BEGIN APPEND ...\n");
-    //if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
-    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "region", tpch_info.REGION_INFO.cols, tpch_info.REGION_INFO.ncols)) != NULL)
+        return err;
   
-    //if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
-    //   return err;
+    if ((err = monetdbe_append(mdbe, "sys", "nation", tpch_info.NATION_INFO.cols, tpch_info.NATION_INFO.ncols)) != NULL)
+        return err;
 
-    //if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
-    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "customer", tpch_info.CUST_INFO.cols, tpch_info.CUST_INFO.ncols)) != NULL)
+        return err;
 
-    //if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
-    //    return err;
+    if ((err = monetdbe_append(mdbe, "sys", "supplier", tpch_info.SUPP_INFO.cols, tpch_info.SUPP_INFO.ncols)) != NULL)
+        return err;
     if ((err = monetdbe_append(mdbe, "sys", "part", tpch_info.PART_INFO.cols, tpch_info.PART_INFO.ncols)) != NULL)
         return err;
     if ((err = monetdbe_append(mdbe, "sys", "partsupp", tpch_info.PSUPP_INFO.cols, tpch_info.PSUPP_INFO.ncols)) != NULL)
         return err;
-    //if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
-    //    return err;
-//    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
-//        return err;
-
+    if ((err = monetdbe_append(mdbe, "sys", "orders", tpch_info.ORDER_INFO.cols, tpch_info.ORDER_INFO.ncols)) != NULL)
+        return err;
+    if ((err = monetdbe_append(mdbe, "sys", "lineitem", tpch_info.LINE_INFO.cols, tpch_info.LINE_INFO.ncols)) != NULL)
+        return err;
 
     return NULL;
 }
