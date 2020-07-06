@@ -51,6 +51,8 @@
 #include "dss.h"
 #include "dsstypes.h"
 #include "dbgen.h"
+#include "tpch_constants.h"
+
 #define debug(fmt, ...) printf("%s:%d: " fmt, __FILE__, __LINE__, __VA_ARGS__);
 
 extern int optind, opterr;
@@ -1058,4 +1060,17 @@ static void clean_up(tpch_info_t* info){
     cleanup_dists();
 }
 
+const char* get_query(int query) {
+	if (query <= 0 || query > TPCH_QUERIES_COUNT) {
+	    return NULL;
+    }
+	return TPCH_QUERIES[query - 1];
+}
+
+const char* get_answer(int query) {
+	if (query <= 0 || query > TPCH_QUERIES_COUNT) {
+	    return NULL;
+    }
+	return TPCH_ANSWERS_SF1[query - 1];
+}
 

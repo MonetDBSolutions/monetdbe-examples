@@ -4,6 +4,5 @@
 char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema);
 
 //! Gets the specified TPC-H Query number as a string
-char* get_query(int query);
-
-//char* get_answer(double sf, int query);
+const char* get_query(int query);
+const char* get_answer(int query);
