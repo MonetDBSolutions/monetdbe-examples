@@ -24,6 +24,7 @@
 #define time_eq(t1, t2) (t1.hours == t2.hours && t1.minutes == t2.minutes && t1.seconds == t2.seconds && t1.ms == t2.ms)
 
 static char hexit[] = "0123456789ABCDEF";
+int debug_data(monetdbe_result*, char*);
 
 #ifdef DEBUG_DATA
 int 
@@ -123,18 +124,22 @@ debug_data(monetdbe_result* result, char* err) {
     error(err);\
     col=(monetdbe_column_int64_t*) rcols[0];\
     r = (int64_t*) col->data;\
-    fprintf(stdout, "select count(*) from %s -- [%d]\n", #tbl, *r);
+    fprintf(stdout, "select count(*) from %s -- [%d]\n", #tbl, *r);\
+    if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)\
+    error(err);
 
 #define CLOCK_QUERY(qnum, qtext) \
-    printf("Q[%s] -- ", #qnum);\
     start = clock();\
     sprintf(q, "%s", qtext);\
-    if ((err = monetdbe_query(mdbe, q, &result, NULL)) != NULL) {\
-        printf("\n%s\n", q);\
+    if ((err = monetdbe_query(mdbe, q, &result, NULL)) != NULL)\
+        fprintf(stderr, "Failure: Qry[%s] -- %s\n\n", #qnum, err);\
+    else{\
+        end = clock();\
+        printf("Q[%s] -- ", #qnum);\
+        printf("took %f sec\n\n", (double)(end - start)/CLOCKS_PER_SEC);\
+        if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)\
         error(err);\
-    }\
-    end = clock();\
-    printf("took %f sec\n\n", (double)(end - start)/CLOCKS_PER_SEC);
+    }
 
 int main(int argc, char **argv)
 {
@@ -184,31 +189,74 @@ int main(int argc, char **argv)
 #ifdef DEBUG_DATA
     debug_data(result, err);
 #endif
-    PRINT_COUNT(lineitem);
-#ifdef DEBUG_DATA
-    debug_data(result, err);
-#endif
 
-    //const char* q1 = get_query(1);
-    //CLOCK_QUERY(1, q1);
+    PRINT_COUNT(lineitem);
+    
+    const char* q1 = get_query(1);
+    CLOCK_QUERY(1, q1);
 
     const char* q2 = get_query(2);
     CLOCK_QUERY(2, q2);
 
-    //const char* q3 = get_query(3)
-    //CLOCK_QUERY(3, q3);
+    const char* q3 = get_query(3);
+    CLOCK_QUERY(3, q3);
 
     const char* q4 = get_query(4);
     CLOCK_QUERY(4, q4);
 
-    //const char* q5 = get_query(5);
-    //CLOCK_QUERY(5, q5);
+    const char* q5 = get_query(5);
+    CLOCK_QUERY(5, q5);
 
     const char* q6 = get_query(6);
     CLOCK_QUERY(6, q6);
 
     const char* q7 = get_query(7);
     CLOCK_QUERY(7, q7);
+    
+    const char* q8 = get_query(8);
+    CLOCK_QUERY(8, q8);
+    
+    const char* q9 = get_query(9);
+    CLOCK_QUERY(9, q9);
+    
+    const char* q10 = get_query(10);
+    CLOCK_QUERY(10, q10);
+    
+    const char* q11 = get_query(11);
+    CLOCK_QUERY(11, q11);
+
+    const char* q12 = get_query(12);
+    CLOCK_QUERY(12, q12);
+
+    const char* q13 = get_query(13);
+    CLOCK_QUERY(13, q13);
+
+    const char* q14 = get_query(14);
+    CLOCK_QUERY(14, q14);
+
+    const char* q15 = get_query(15);
+    CLOCK_QUERY(15, q15);
+
+    const char* q16 = get_query(16);
+    CLOCK_QUERY(16, q16);
+
+    const char* q17 = get_query(17);
+    CLOCK_QUERY(17, q17);
+
+    const char* q18 = get_query(18);
+    CLOCK_QUERY(18, q18);
+
+    const char* q19 = get_query(19);
+    CLOCK_QUERY(19, q19);
+
+    const char* q20 = get_query(20);
+    CLOCK_QUERY(20, q20);
+
+    const char* q21 = get_query(21);
+    CLOCK_QUERY(21, q21);
+
+    const char* q22 = get_query(22);
+    CLOCK_QUERY(22, q22);
     
     if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
         error(err);
