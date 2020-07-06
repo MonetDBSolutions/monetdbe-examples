@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <string.h>
+#include <time.h>
 #include "dbgen.h"
 
 // #define DEBUG_DATA
@@ -25,194 +26,196 @@
 static char hexit[] = "0123456789ABCDEF";
 
 #ifdef DEBUG_DATA
-  int 
-  debug_data(monetdbe_result* result, char* err) {
+int 
+debug_data(monetdbe_result* result, char* err) {
     monetdbe_column** rcol = (monetdbe_column**) malloc(sizeof(monetdbe_column*) * result->ncols);
     if(!rcol)
-      error("debug_data malloc failed\n");
+        error("debug_data malloc failed\n");
 
     for (int64_t r = 0; r < result->nrows; r++) {
-      for (size_t c = 0; c < result->ncols; c++) {
-        if ((err = monetdbe_result_fetch(result, rcol+c, c)) != NULL)
-          error(err)
-        switch (rcol[c]->type) {
-          case monetdbe_int32_t: {
-            monetdbe_column_int32_t * col = (monetdbe_column_int32_t *) rcol[c];
-            if (col->data[r] == col->null_value) {
-              printf("NULL");
-            } else {
-              printf("%d", col->data[r]);
-            }
-            break;
-          }
-          case monetdbe_str: {
-            monetdbe_column_str * col = (monetdbe_column_str *) rcol[c];
-            if (col->is_null(col->data[r])) {
-              printf("NULL");
-            } else {
-              printf("%s", (char*) col->data[r]);
-            }
-            break;
-          }
-          case monetdbe_date: {
-            monetdbe_column_date * col = (monetdbe_column_date *) rcol[c];
-            if (date_eq(col->data[r], col->null_value)) {
-              printf("NULL");
-            } else {
-              printf("%d-%d-%d", col->data[r].year, col->data[r].month, col->data[r].day);
-            }
-            break;
-          }
-          case monetdbe_time: {
-            monetdbe_column_time * col = (monetdbe_column_time *) rcol[c];
-            if (time_eq(col->data[r], col->null_value)) {
-              printf("NULL");
-            } else {
-              printf("%d:%d:%d.%d", col->data[r].hours, col->data[r].minutes, col->data[r].seconds, col->data[r].ms);
-            }
-            break;
-          }
-          case monetdbe_timestamp: {
-            monetdbe_column_timestamp * col = (monetdbe_column_timestamp *) rcol[c];
-            if (date_eq(col->data[r].date, col->null_value.date) && time_eq(col->data[r].time, col->null_value.time)) {
-              printf("NULL");
-            } else {
-              printf("%d-%d-%d ", col->data[r].date.year, col->data[r].date.month, col->data[r].date.day);
-              printf("%d:%d:%d.%d", col->data[r].time.hours, col->data[r].time.minutes, col->data[r].time.seconds, col->data[r].time.ms);
-            }
-            break;
-          }
-          case monetdbe_blob: {
-            monetdbe_column_blob * col = (monetdbe_column_blob *) rcol[c];
-            if (!col->data[r].data) {
-              printf("NULL");
-            } else {
-              for (size_t i = 0; i < col->data[r].size; i++) {
-                int hval = (col->data[r].data[i] >> 4) & 15;
-                int lval = col->data[r].data[i] & 15;
+        for (size_t c = 0; c < result->ncols; c++) {
+            if ((err = monetdbe_result_fetch(result, rcol+c, c)) != NULL)
+                error(err)
+                    switch (rcol[c]->type) {
+                        case monetdbe_int32_t: {
+                                                   monetdbe_column_int32_t * col = (monetdbe_column_int32_t *) rcol[c];
+                                                   if (col->data[r] == col->null_value) {
+                                                       printf("NULL");
+                                                   } else {
+                                                       printf("%d", col->data[r]);
+                                                   }
+                                                   break;
+                                               }
+                        case monetdbe_str: {
+                                               monetdbe_column_str * col = (monetdbe_column_str *) rcol[c];
+                                               if (col->is_null(col->data[r])) {
+                                                   printf("NULL");
+                                               } else {
+                                                   printf("%s", (char*) col->data[r]);
+                                               }
+                                               break;
+                                           }
+                        case monetdbe_date: {
+                                                monetdbe_column_date * col = (monetdbe_column_date *) rcol[c];
+                                                if (date_eq(col->data[r], col->null_value)) {
+                                                    printf("NULL");
+                                                } else {
+                                                    printf("%d-%d-%d", col->data[r].year, col->data[r].month, col->data[r].day);
+                                                }
+                                                break;
+                                            }
+                        case monetdbe_time: {
+                                                monetdbe_column_time * col = (monetdbe_column_time *) rcol[c];
+                                                if (time_eq(col->data[r], col->null_value)) {
+                                                    printf("NULL");
+                                                } else {
+                                                    printf("%d:%d:%d.%d", col->data[r].hours, col->data[r].minutes, col->data[r].seconds, col->data[r].ms);
+                                                }
+                                                break;
+                                            }
+                        case monetdbe_timestamp: {
+                                                     monetdbe_column_timestamp * col = (monetdbe_column_timestamp *) rcol[c];
+                                                     if (date_eq(col->data[r].date, col->null_value.date) && time_eq(col->data[r].time, col->null_value.time)) {
+                                                         printf("NULL");
+                                                     } else {
+                                                         printf("%d-%d-%d ", col->data[r].date.year, col->data[r].date.month, col->data[r].date.day);
+                                                         printf("%d:%d:%d.%d", col->data[r].time.hours, col->data[r].time.minutes, col->data[r].time.seconds, col->data[r].time.ms);
+                                                     }
+                                                     break;
+                                                 }
+                        case monetdbe_blob: {
+                                                monetdbe_column_blob * col = (monetdbe_column_blob *) rcol[c];
+                                                if (!col->data[r].data) {
+                                                    printf("NULL");
+                                                } else {
+                                                    for (size_t i = 0; i < col->data[r].size; i++) {
+                                                        int hval = (col->data[r].data[i] >> 4) & 15;
+                                                        int lval = col->data[r].data[i] & 15;
 
-                printf("%c%c", hexit[hval], hexit[lval]);
-              }
-            }
-            break;
-          }
-          default: {
-            printf("UNKNOWN");
-          }
-        }
+                                                        printf("%c%c", hexit[hval], hexit[lval]);
+                                                    }
+                                                }
+                                                break;
+                                            }
+                        default: {
+                                     printf("UNKNOWN");
+                                 }
+                    }
 
-        if (c + 1 < result->ncols) {
-          printf(", ");
+            if (c + 1 < result->ncols) {
+                printf(", ");
+            }
         }
-      }
-      printf("\n");
+        printf("\n");
     }
 
     free(rcol);
 
     return 0;
-  }
+}
 #endif
 
+#define PRINT_COUNT(tbl) \
+    sprintf(q, "select count(*) from sys.%s;", #tbl);\
+    if ((err = monetdbe_query(mdbe, q, &result, NULL)) != NULL)\
+    error(err);\
+    if ((err=monetdbe_result_fetch(result, rcols, 0)) != NULL)\
+    error(err);\
+    col=(monetdbe_column_int64_t*) rcols[0];\
+    r = (int64_t*) col->data;\
+    fprintf(stdout, "select count(*) from %s -- [%d]\n", #tbl, *r);
 
-int
-main(int argc, char **argv)
+#define CLOCK_QUERY(qnum, qtext) \
+    printf("Q[%s] -- ", #qnum);\
+    start = clock();\
+    sprintf(q, "%s", qtext);\
+    if ((err = monetdbe_query(mdbe, q, &result, NULL)) != NULL) {\
+        printf("\n%s\n", q);\
+        error(err);\
+    }\
+    end = clock();\
+    printf("took %f sec\n\n", (double)(end - start)/CLOCKS_PER_SEC);
+
+int main(int argc, char **argv)
 {
-	char* err = NULL;
-	monetdbe_database mdbe = NULL;
-	monetdbe_result* result = NULL;
-    
-  // second argument is a string for the db directory or NULL for in-memory mode
-  if (monetdbe_open(&mdbe, NULL, NULL))
-    error("Failed to open database")
+    char* err = NULL;
+    monetdbe_database mdbe = NULL;
+    monetdbe_result* result = NULL;
+    monetdbe_column* rcols[1];
+    monetdbe_column_int64_t* col;
+    int64_t* r;
+    char* q;
+    clock_t start, end;
 
-  // try load schema
-  err = dbgen(sf, mdbe, "sys");
+    // second argument is a string for the db directory or NULL for in-memory mode
+    if (monetdbe_open(&mdbe, NULL, NULL))
+        error("Failed to open database");
+
+    // try load schema
+    err = dbgen(sf, mdbe, "sys");
     if (err)
-      error(err);
+        error(err);
 
-	if ((err = monetdbe_query(mdbe, "select * from sys.region;", &result, NULL)) != NULL)
-    error(err)
-  fprintf(stdout, "REGION tbl %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(region);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.nation;", &result, NULL)) != NULL)
-    error(err)
-  fprintf(stdout, "NATION tbl %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(nation);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.customer;", &result, NULL)) != NULL)
-	  error(err)
-  fprintf(stdout, "CUSTOMER with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(customer); 
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.supplier;", &result, NULL)) != NULL)
-    error(err)
-  fprintf(stdout, "SUPPLIER tbl with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(supplier);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.part;", &result, NULL)) != NULL)
-	  error(err)
-  fprintf(stdout, "PART tbl with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(part);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.partsupp;", &result, NULL)) != NULL)
-	  error(err)
-  fprintf(stdout, "PARTSUPP tbl with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(partsupp);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.orders;", &result, NULL)) != NULL)
-	  error(err)
-  fprintf(stdout, "ORDERS tbl with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(orders);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
-
-
-  if ((err = monetdbe_query(mdbe, "select * from sys.lineitem;", &result, NULL)) != NULL)
-	  error(err)
-  fprintf(stdout, "LINETITEM tbl with %zu cols and %"PRId64" rows and name %s\n", result->ncols, result->nrows, result->name);
+    PRINT_COUNT(lineitem);
 #ifdef DEBUG_DATA
-  debug_data(result, err);
+    debug_data(result, err);
 #endif
-  if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-    error(err)
 
-  if (monetdbe_close(mdbe))
-	  error("Failed to close database")
+    //const char* q1 = get_query(1);
+    //CLOCK_QUERY(1, q1);
 
-  fprintf(stdout, "Done\n");
-	return 0;
+    const char* q2 = get_query(2);
+    CLOCK_QUERY(2, q2);
+
+    //const char* q3 = get_query(3)
+    //CLOCK_QUERY(3, q3);
+
+    const char* q4 = get_query(4);
+    CLOCK_QUERY(4, q4);
+
+    //const char* q5 = get_query(5);
+    //CLOCK_QUERY(5, q5);
+
+    const char* q6 = get_query(6);
+    CLOCK_QUERY(6, q6);
+
+    const char* q7 = get_query(7);
+    CLOCK_QUERY(7, q7);
+    
+    if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
+        error(err);
+
+    if (monetdbe_close(mdbe))
+        error("Failed to close database");
+
+    fprintf(stdout, "Done\n");
+    return 0;
 }

@@ -1,4 +1,4 @@
-
+set(CMAKE_BUILD_TYPE "DEBUG")
 add_executable(sf1 sf1.c)
 target_link_libraries(sf1
   PRIVATE
