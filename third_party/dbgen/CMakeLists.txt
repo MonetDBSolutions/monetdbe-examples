@@ -11,7 +11,7 @@ add_definitions(-D_FILE_OFFSET_BITS=64
                 -DMONETDB
                 -DTPCH)
 
-            set(CMAKE_BUILD_TYPE "DEBUG")
+set(CMAKE_BUILD_TYPE "DEBUG")
 add_library(dbgen STATIC
             build.c
             dbgen.c
