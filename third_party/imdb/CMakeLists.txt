@@ -5,10 +5,10 @@ cmake_policy(SET CMP0063 NEW)
 include_directories(include)
 
 set(CMAKE_BUILD_TYPE "DEBUG")
-add_library(imdb STATIC imdb.c)
+add_library(imdblib STATIC imdb.c)
 
-target_link_libraries(imdb
+target_link_libraries(imdblib
   PRIVATE
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
-set_property(TARGET imdb PROPERTY C_STANDARD 99)
+set_property(TARGET imdblib PROPERTY C_STANDARD 99)

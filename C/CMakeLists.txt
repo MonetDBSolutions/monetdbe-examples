@@ -35,3 +35,4 @@ target_link_libraries(logs
 add_test(run_logs logs)
 
 add_subdirectory(tpch)
+add_subdirectory(imdb)

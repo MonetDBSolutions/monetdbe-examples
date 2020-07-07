@@ -1,4 +1,3 @@
-#pragma once
 #include "monetdbe.h"
 
 char* imdbgen(monetdbe_database mdbe, char* data_dir);
