@@ -12,6 +12,7 @@
 import monetdbe
 import time
 import sys
+import os
 
 conn = monetdbe.connect(':memory:')
 if not conn:
@@ -149,12 +150,10 @@ def regression():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print('Provide the absolute path the location of the input data')
-        exit(-1)
-    print(sys.argv[1])
+    path = os.getcwd() + '/../'
+    print(path)
     createdb()
-    loaddb(sys.argv[1])
+    loaddb(path)
     distinct()
     frequency()
     regression()
