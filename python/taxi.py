@@ -116,31 +116,37 @@ def frequency():
 def regression():
     clk = time.time()
     cursor = conn.cursor()
+
     cursor.execute("""
-        SELECT
-            (SUM(trip_distance * fare_amount) - SUM(trip_distance) * SUM(fare_amount) / COUNT(*)) /
-            (SUM(trip_distance * trip_distance) - SUM(trip_distance) * SUM(trip_distance) / COUNT(*)) AS beta,
-            AVG(fare_amount) AS avg_fare_amount,
-            AVG(trip_distance) AS avg_trip_distance
-        FROM 
-            yellow_tripdata_2016_01,
-            (
-                SELECT 
-                    AVG(fare_amount) + 3 * STDDEV_SAMP(fare_amount) as max_fare,
-                    AVG(trip_distance) + 3 * STDDEV_SAMP(trip_distance) as max_distance
-                FROM yellow_tripdata_2016_01
-            ) AS sub
-        WHERE 
-            fare_amount > 0 AND
-            fare_amount < sub.max_fare AND 
-            trip_distance > 0 AND
-            trip_distance < sub.max_distance
-        """)
+            SELECT
+                AVG(fare_amount) + 3 * STDDEV_SAMP(fare_amount) as max_fare,
+                AVG(trip_distance) + 3 * STDDEV_SAMP(trip_distance) as max_distance
+            FROM yellow_tripdata_2016_01
+            """)
+    rows= cursor.fetchall()
+    print(rows)
+    max_fare, max_distance = rows[0]
+    cursor.execute(
+        "SELECT"
+        "   (SUM(trip_distance * fare_amount) - SUM(trip_distance) * SUM(fare_amount) / COUNT(*)) /"
+        "   (SUM(trip_distance * trip_distance) - SUM(trip_distance) * SUM(trip_distance) / COUNT(*)) AS beta,"
+        "   AVG(fare_amount) AS avg_fare_amount,"
+        "   AVG(trip_distance) AS avg_trip_distance "
+        "FROM yellow_tripdata_2016_01 "
+        "WHERE "
+        "   fare_amount > 0 AND "
+        f"   fare_amount < {max_fare} AND  "
+        "   trip_distance > 0 AND "
+        f"   trip_distance < {max_distance} "
+        )
     beta, avg_fare_amount, avg_trip_distance = cursor.fetchone()
     alpha = avg_fare_amount - beta * avg_trip_distance
     print(alpha)
+    rows= cursor.fetchall()
+    print(cursor.fetchall())
     cursor.close()
     print("Regression %6.3f seconds"  %(time.time() - clk))
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # open a connection to another database
     conn3 = monetdbe.connect('db2')
     if not conn3:
-        print('Could not access the memory')
+        print('Could not access database "db2" ')
         exit -1
 
     print("Connection to db2 established")
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         cur1.execute('drop table tmp1');
         cur2.execute('drop table tmp1');
     except monetdbe.DatabaseError as msg:
-        print(f"Error {msg}")
+        print(f"Error, we should keep the connection to db1 around")
 
     conn1.close()
     conn2.close()
