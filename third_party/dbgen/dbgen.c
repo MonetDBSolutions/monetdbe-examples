@@ -287,7 +287,7 @@ static void append_supp(supplier_t* s, append_info_t* t) {
             continue;
         }
         if(strcmp(t->cols[i]->name, "s_acctbal") == 0){
-            ((double*)t->cols[i]->data)[k] = s->acctbal;
+            ((long*)t->cols[i]->data)[k] = s->acctbal;
             continue;
         }
         if(strcmp(t->cols[i]->name, "s_comment") == 0){
@@ -323,7 +323,7 @@ static void append_cust(customer_t* c, append_info_t* t) {
             continue;
         }
         if(strcmp(t->cols[i]->name, "c_acctbal") == 0){
-            ((double*)t->cols[i]->data)[k] = c->acctbal;
+            ((long*)t->cols[i]->data)[k] = c->acctbal;
             continue;
         }
         if(strcmp(t->cols[i]->name, "c_mktsegment") == 0){
@@ -371,7 +371,7 @@ static void append_part(part_t* p, append_info_t* t) {
             continue;
         }
         if(strcmp(t->cols[i]->name, "p_retailprice") == 0){
-            ((double*)t->cols[i]->data)[k] = p->retailprice;
+            ((long*)t->cols[i]->data)[k] = p->retailprice;
             continue;
         }
         if(strcmp(t->cols[i]->name, "p_comment") == 0){
@@ -402,7 +402,7 @@ static void append_psupp(part_t* p, append_info_t* t) {
                 continue;
             }
             if(strcmp(t->cols[i]->name, "ps_supplycost") == 0){
-                ((double*)t->cols[i]->data)[k] = p->s[j].scost;
+                ((long*)t->cols[i]->data)[k] = p->s[j].scost;
                 continue;
             }
             if(strcmp(t->cols[i]->name, "ps_comment") == 0){
@@ -454,7 +454,7 @@ static void append_order(order_t* o, append_info_t* t) {
             continue;
         }
         if(strcmp(t->cols[i]->name, "o_totalprice") == 0){
-            ((double*)t->cols[i]->data)[k] = o->totalprice;
+            ((long*)t->cols[i]->data)[k] = o->totalprice;
             continue;
         }
         if(strcmp(t->cols[i]->name, "o_orderdate") == 0){
@@ -507,15 +507,15 @@ static void append_line(order_t* o, append_info_t* t) {
                 continue;
             }
             if(strcmp(t->cols[i]->name, "l_extendedprice") == 0){
-                ((double*)t->cols[i]->data)[k] = o->l[j].eprice;
+                ((long*)t->cols[i]->data)[k] = o->l[j].eprice;
                 continue;
             }
             if(strcmp(t->cols[i]->name, "l_discount") == 0){
-                ((double*)t->cols[i]->data)[k] = o->l[j].discount;
+                ((long*)t->cols[i]->data)[k] = o->l[j].discount;
                 continue;
             }
             if(strcmp(t->cols[i]->name, "l_tax") == 0){
-                ((double*)t->cols[i]->data)[k] = o->l[j].tax;
+                ((long*)t->cols[i]->data)[k] = o->l[j].tax;
                 continue;
             }
             if(strcmp(t->cols[i]->name, "l_returnflag") == 0){
