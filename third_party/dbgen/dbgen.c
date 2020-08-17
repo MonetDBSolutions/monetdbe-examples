@@ -856,7 +856,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column supplier_col2 = { .type = monetdbe_str, .name = "s_address" };
     monetdbe_column supplier_col3 = { .type = monetdbe_int64_t, .name = "s_nationkey" };
     monetdbe_column supplier_col4 = { .type = monetdbe_str, .name = "s_phone" };
-    monetdbe_column supplier_col5 = { .type = monetdbe_double, .name = "s_acctbal" };
+    monetdbe_column supplier_col5 = { .type = monetdbe_int64_t, .name = "s_acctbal" };
     monetdbe_column supplier_col6 = { .type = monetdbe_str, .name = "s_comment" };
     monetdbe_column* supplier_cols[7] = { &supplier_col0, &supplier_col1, &supplier_col2, &supplier_col3, &supplier_col4, &supplier_col5, &supplier_col6 };
     struct append_info_t supplier_info = { .ncols = 7, .cols = (monetdbe_column**) &supplier_cols, .counter = 0, .init = false};
@@ -870,7 +870,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column customer_col2 = { .type = monetdbe_str, .name = "c_address" };
     monetdbe_column customer_col3 = { .type = monetdbe_int64_t, .name = "c_nationkey" };
     monetdbe_column customer_col4 = { .type = monetdbe_str, .name = "c_phone" };
-    monetdbe_column customer_col5 = { .type = monetdbe_double, .name = "c_acctbal" };
+    monetdbe_column customer_col5 = { .type = monetdbe_int64_t, .name = "c_acctbal" };
     monetdbe_column customer_col6 = { .type = monetdbe_str, .name = "c_mktsegment" };
     monetdbe_column customer_col7 = { .type = monetdbe_str, .name = "c_comment" };
     monetdbe_column* customer_cols[8] = { &customer_col0, &customer_col1, &customer_col2, &customer_col3, 
@@ -888,7 +888,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column part_col4 = { .type = monetdbe_str, .name = "p_type" };
     monetdbe_column part_col5 = { .type = monetdbe_int64_t, .name = "p_size" };
     monetdbe_column part_col6 = { .type = monetdbe_str, .name = "p_container" };
-    monetdbe_column part_col7 = { .type = monetdbe_double, .name = "p_retailprice" };
+    monetdbe_column part_col7 = { .type = monetdbe_int64_t, .name = "p_retailprice" };
     monetdbe_column part_col8 = { .type = monetdbe_str, .name = "p_comment" };
     monetdbe_column* part_cols[9] = { &part_col0, &part_col1, &part_col2, &part_col3, &part_col4, &part_col5, &part_col6, &part_col7, &part_col8 };
     struct append_info_t part_info = { .ncols = 9, .cols = (monetdbe_column**) &part_cols, .counter = 0, .init = false};
@@ -900,7 +900,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column psupp_col0 = { .type = monetdbe_int64_t, .name = "ps_partkey" };
     monetdbe_column psupp_col1 = { .type = monetdbe_int64_t, .name = "ps_suppkey" };
     monetdbe_column psupp_col2 = { .type = monetdbe_int64_t, .name = "ps_availqty" };
-    monetdbe_column psupp_col3 = { .type = monetdbe_double, .name = "ps_supplycost" };
+    monetdbe_column psupp_col3 = { .type = monetdbe_int64_t, .name = "ps_supplycost" };
     monetdbe_column psupp_col4 = { .type = monetdbe_str, .name = "ps_comment" };
     monetdbe_column* psupp_cols[5] = { &psupp_col0, &psupp_col1, &psupp_col2, &psupp_col3, &psupp_col4 };
     struct append_info_t psupp_info = { .ncols = 5, .cols = (monetdbe_column**) &psupp_cols, .counter = 0, .init = false};
@@ -912,7 +912,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column orders_col0 = { .type = monetdbe_int64_t, .name = "o_orderkey" };
     monetdbe_column orders_col1 = { .type = monetdbe_int64_t, .name = "o_custkey" };
     monetdbe_column orders_col2 = { .type = monetdbe_str, .name = "o_orderstatus" };
-    monetdbe_column orders_col3 = { .type = monetdbe_double, .name = "o_totalprice" };
+    monetdbe_column orders_col3 = { .type = monetdbe_int64_t, .name = "o_totalprice" };
     monetdbe_column orders_col4 = { .type = monetdbe_date, .name = "o_orderdate" };
     monetdbe_column orders_col5 = { .type = monetdbe_str, .name = "o_orderpriority" };
     monetdbe_column orders_col6 = { .type = monetdbe_str, .name = "o_clerk" };
@@ -930,9 +930,9 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
     monetdbe_column lineitem_col2 = { .type = monetdbe_int64_t, .name = "l_suppkey" };
     monetdbe_column lineitem_col3 = { .type = monetdbe_int64_t, .name = "l_linenumber" };
     monetdbe_column lineitem_col4 = { .type = monetdbe_int64_t, .name = "l_quantity" };
-    monetdbe_column lineitem_col5 = { .type = monetdbe_double, .name = "l_extendedprice" };
-    monetdbe_column lineitem_col6 = { .type = monetdbe_double, .name = "l_discount" };
-    monetdbe_column lineitem_col7 = { .type = monetdbe_double, .name = "l_tax" };
+    monetdbe_column lineitem_col5 = { .type = monetdbe_int64_t, .name = "l_extendedprice" };
+    monetdbe_column lineitem_col6 = { .type = monetdbe_int64_t, .name = "l_discount" };
+    monetdbe_column lineitem_col7 = { .type = monetdbe_int64_t, .name = "l_tax" };
     monetdbe_column lineitem_col8 = { .type = monetdbe_str, .name = "l_returnflag" };
     monetdbe_column lineitem_col9 = { .type = monetdbe_str, .name = "l_linestatus" };
     monetdbe_column lineitem_col10 = { .type = monetdbe_date, .name = "l_shipdate" };
