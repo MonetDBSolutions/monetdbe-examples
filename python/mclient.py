@@ -25,11 +25,11 @@ def usage():
     #  print("\\a       - disable auto commit")
     #  print("\\e       - echo the query in sql formatting mode")
     print("\\t       - set the timer {none,clock,performance} (none is default)")
-    print("\\f       - format using renderer {default, csv, tab, sql, html, json, rowcount}")
-    #  print("\\w#      - set maximal page width (-1=unlimited, 0=terminal width, >0=limit to num)")
-    #  print("\r#      - set maximum rows per page (-1=raw)")
-    #  print("\L file  - save client-server interaction")
-    #  print("\X       - trace mclient code")
+    print("\\f       - format rendering {default, csv, tab, raw, sql, pandas, line, keyvalue, html, json, rowcount}")
+    print("\\w#      - set maximal screen width (-1=unlimited, 0=terminal width, >0=limit to num)")
+    #  print("\\r#      - set maximum rows per page (-1=raw)")
+    #  print("\\L file  - save client-server interaction")
+    #  print("\\X       - trace mclient code")
     print("\\q       - terminate session and quit mclient")
 
 
@@ -102,23 +102,22 @@ def layout(header, nw, nowrap=True):
             break
         hsize.append(len(h.name))
         newsize.append(s)
-
-    vartotal = sum(newsize)
+        nw = newsize
 
     # punish the column until you cannot squeeze any further
     overshoot = sum(nw) - screensize
-    while screensize > 0 and sum(nw) > screensize:
+    while screensize > 0 and sum(nw) > screensize and overshoot > 0:
         punish = int(overshoot / 10)
-        if punish < 10:
-            punish = 10
+        if punish == 0:
+            punish = 1
         maxwidth = max(nw)
         idx  = nw.index(maxwidth)
-        nw[idx] -= punish
-        overshoot = sum(nw) - screensize
+        if nw[idx] > punish and nw[idx] > hsize[idx]:
+            nw[idx] -= punish
+        overshoot -= punish
 
     #  print(f"Final:{newsize},{hsize}, {vartotal},{minvartotal}")
     return nw
-
 
 def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n', width=5, maxwidth=25, nullvalue=''):
     if not header and not tuples:
@@ -174,7 +173,7 @@ def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n'
             if not tuples:
                 return 'No result set'
             for r in tuples:
-                answer += ('\t,'.join([str(e) for e in r])) + rowsep
+                answer += (',\t'.join([str(e) for e in r])) + rowsep
             return answer
 
         if style == 'default':
@@ -187,16 +186,20 @@ def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n'
                     nw.append(est)
             else:
                 nw = [len(n) + 1 for n in names]
-            layout(header, nw, nowrap=(len(tuples) == 0))
+            # nw = layout(header, nw, nowrap=(len(tuples) == 0))
             if headeron:
                 hdr = ''
+                newnames = []
                 for h, w in zip(names, nw):
                     v = "{0:<{width}}".format(h, width=w)
+                    if len(hdr) + len(v) > screensize:
+                        hdr = hdr + '>more'
+                        break
+                    newnames.append(h)
                     if len(v) <= w:
                         v = v + ' ' * (w + 1 -len(v))
                     hdr = hdr + v
-                if len(nw) < len(header):
-                    hdr = hdr + '>more'
+                names =  newnames
                 answer += hdr + '\n'
 
                 hdr = ''
@@ -208,7 +211,7 @@ def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n'
                 row = ''
                 leftover = []
                 morerows = False
-                for e, w in zip(t, nw):
+                for n, e, w in zip(names, t, nw):
                     if e is None:
                         e = nullvalue
                     val = str(e)[:w]
@@ -228,7 +231,7 @@ def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n'
                 while morerows:
                     newleftover = []
                     row = ''
-                    for e, w in zip(leftover, nw):
+                    for n, e, w in zip(names, leftover, nw):
                         val = e[:w]
                         v = "{0:<{width}} ".format(val, width=w)
                         if len(v) <= w:
@@ -341,8 +344,10 @@ def mclient_interpreter(lines):
 
         if line.startswith('\\f'):
             formatter = line[2:].strip()
-            if formatter not in ['default', 'csv', 'tab', 'raw', 'sql', 'html', 'json', 'rowcount', '']:
-                print(f"Formatter not in ['default', 'csv', 'tab', 'raw', 'sql', html', 'json', 'rowcount', '']")
+            if formatter not in ['default', 'csv', 'tab', 'raw', 'sql', 'pandas',
+                                 'line', 'keyvalue', 'html', 'json', 'rowcount', '']:
+                print(f"Formatter not in [default, csv, tab, raw, sql, pandas"
+                      f"line, keyvalue,  html, json, rowcount]")
                 return
             if not formatter:
                 formatter = None
@@ -393,7 +398,7 @@ def mclient_interpreter(lines):
 
             #  print('action', line)
             clk = time.time()
-            rows, hdr = fetchall(line)
+            rows, hdr = db.fetchall(line)
 
             clk = time.time() - clk
             if formatter == 'rowcount':
