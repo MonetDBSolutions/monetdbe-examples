@@ -121,7 +121,7 @@ def layout(header, nw, nowrap=True):
 
 def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n', width=5, maxwidth=25, nullvalue=''):
     if not header and not tuples:
-        return "Missing result set"
+        return ""
     if not style:
         style = 'csv'
     #  print(f"formatter '{style}'")
@@ -180,12 +180,11 @@ def render(header, tuples, style='fancy', headeron=True, colsep='|', rowsep='\n'
             # create an adjusted column width which respects the screensize
             nw = []
             if tuples:
-                t = tuples[0]
-                for h, e in zip(names, t):
-                    est = max([len(str(e)), len(str(h))]) + 1
-                    nw.append(est)
-            else:
-                nw = [len(n) + 1 for n in names]
+                nw = [len(str(h)) + 1 for h in names]
+                for t in tuples[:250]:
+                    for i in range(0, len(t)):
+                        nw[i] = max(nw[i], len(str(t[i])))
+
             # nw = layout(header, nw, nowrap=(len(tuples) == 0))
             if headeron:
                 hdr = ''
