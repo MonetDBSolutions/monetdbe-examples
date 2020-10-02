@@ -43,10 +43,10 @@ cmake --build .
 This results in the libmonetdbe.so library to be created and stored  .../lib64/libmonetdbe.so
 or .../build/tools/monetdbe/libmonetdbe.so. The necessary include file monetdbe.h is located
 in the same place.
-The location of this library should be made known in src/CMakeList.c,e.g.
 
+Continue with the compilation of the examples using
 ```
-set(monetdbe_public_headers
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/monetdbe.h>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/monetdb/monetdbe.h>)
+mkdir build && cd build
+cmake -DCMAKE_PREFIX_PATH=$prefix .. #were $prefix is your monetdb install path
+cmake --build .
 ```
