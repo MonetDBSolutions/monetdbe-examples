@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#define error(msg) {fprintf(stderr, "Failure: %s\n", msg); exit -1;}
+#define error(msg) { fprintf(stderr, "Failure: %s\n", msg); exit(-1); }
 monetdbe_database mdbe = NULL;
 
 void startup(char *db)
@@ -27,7 +27,7 @@ void startup(char *db)
 		error("Failed to open database")
 }
 
-void shutdown()
+void _shutdown()
 {
 	if (monetdbe_close(mdbe))
 		error("Failed to close database")
@@ -38,11 +38,11 @@ main(void)
 {
 	printf("hello all, startup your first database\n");
 	startup(NULL);
-	shutdown();
+	_shutdown();
 
 	printf("closed it\n, try a persistent one");
 	startup("./_local_");
-	shutdown();
+	_shutdown();
 
 	printf("that was all for today\n");
 	return 0;

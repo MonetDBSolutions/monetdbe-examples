@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <limits.h>
 #include <string.h>
 

@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <limits.h>
 #include <string.h>
 #include <time.h>
@@ -37,10 +39,6 @@ int main(int argc, char **argv)
     char* err = NULL;
     monetdbe_database mdbe = NULL;
     monetdbe_result* result = NULL;
-    monetdbe_column* rcols[1];
-    monetdbe_column_int64_t* col;
-    int64_t* r;
-    char* q;
     clock_t start, end;
     
     if (argc < 2) {
