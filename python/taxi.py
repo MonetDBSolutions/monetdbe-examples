@@ -53,7 +53,7 @@ def loaddb(dir):
     cursor = conn.cursor()
     cursor.execute("""
     COPY OFFSET 2 INTO yellow_tripdata_2016_01 FROM '%s/data/yellow_tripdata_2016-01.csv' delimiters ',','\n'  best effort
-    """ % dir)
+    """ % dir.replace('\\', r'\\'))
     cursor.execute("SELECT count(*) FROM yellow_tripdata_2016_01")
     print(cursor.fetchone())
     cursor.close()
