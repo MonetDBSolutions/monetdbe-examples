@@ -1,0 +1,145 @@
+diff --git a/C/CMakeLists.txt b/C/CMakeLists.txt
+index 68826e2..61a5a2d 100644
+--- a/C/CMakeLists.txt
++++ b/C/CMakeLists.txt
+@@ -9,29 +9,29 @@
+ add_executable(kickoff kickoff.c)
+ target_link_libraries(kickoff
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ add_test(run_kickoff kickoff)
+ 
+ add_executable(helloworld helloworld.c)
+ target_link_libraries(helloworld
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ add_test(run_helloworld helloworld)
+ 
+ add_executable(tumble tumble.c)
+ target_link_libraries(tumble
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ add_test(run_tumble tumble)
+ 
+ add_executable(logs logs.c)
+ target_link_libraries(logs
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ add_test(run_logs logs)
+ 
+ add_subdirectory(tpch)
+diff --git a/C/helloworld.c b/C/helloworld.c
+index bd90582..21962d1 100644
+--- a/C/helloworld.c
++++ b/C/helloworld.c
+@@ -24,7 +24,7 @@ main(void)
+ 	monetdbe_database mdbe = NULL;
+ 
+ 	// second argument is a string for the db directory or NULL for in-memory mode
+-	if (monetdbe_open(&mdbe, NULL, NULL))
++	if (monetdbe_open(&mdbe, "dbx", NULL))
+ 		error("Failed to open database")
+ 
+ 	printf("hello world, we have a lift off\n MonetDBe has been started\n");
+diff --git a/C/imdb/CMakeLists.txt b/C/imdb/CMakeLists.txt
+index 5604bf8..19c8c9b 100644
+--- a/C/imdb/CMakeLists.txt
++++ b/C/imdb/CMakeLists.txt
+@@ -2,7 +2,7 @@ set(CMAKE_BUILD_TYPE "DEBUG")
+ add_executable(imdb imdb.c)
+ target_link_libraries(imdb
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe
+     imdblib)
+ add_test(run_imdb imdb)
+diff --git a/C/tpch/CMakeLists.txt b/C/tpch/CMakeLists.txt
+index 1b67bdf..d20153f 100644
+--- a/C/tpch/CMakeLists.txt
++++ b/C/tpch/CMakeLists.txt
+@@ -2,7 +2,7 @@ set(CMAKE_BUILD_TYPE "DEBUG")
+ add_executable(sf1 sf1.c)
+ target_link_libraries(sf1
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe
+     dbgen)
+ add_test(run_sf1 sf1)
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 30d2925..4391ff6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,7 +12,10 @@ project(MonetDB-extend VERSION "${MONETDB_VERSION}" LANGUAGES C)
+ set(C_STANDARD_REQUIRED ON)
+ set(CMAKE_C_STANDARD 99)
+ 
+-find_package(MonetDB CONFIG REQUIRED)
++find_package(PkgConfig REQUIRED) 
++
++pkg_check_modules(monetdbe REQUIRED IMPORTED_TARGET monetdbe)
++#find_package(MonetDB CONFIG REQUIRED)
+ #add_subdirectory(python)
+ #add_subdirectory(notebooks)
+ include_directories(third_party/dbgen/include)
+diff --git a/python/russian.py b/python/russian.py
+index 43ab260..b3bb535 100644
+--- a/python/russian.py
++++ b/python/russian.py
+@@ -22,6 +22,7 @@ if __name__ == "__main__":
+ 
+         #f= open('script', 'w')
+         pool = [str(c) for c in  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
++        """
+         for i in range(10000):
+             s1 = pool * int(3200/len(pool))
+             random.shuffle(s1)
+@@ -36,6 +37,7 @@ if __name__ == "__main__":
+             random.shuffle(s4)
+             s4 = ''.join(s4)
+         print("Clk %5.3f" % (time.time() - clk))
++        """
+ 
+         for i in range(10000):
+             s1 = pool * int(3200/len(pool))
+diff --git a/third_party/dbgen/CMakeLists.txt b/third_party/dbgen/CMakeLists.txt
+index 8160635..67610c1 100644
+--- a/third_party/dbgen/CMakeLists.txt
++++ b/third_party/dbgen/CMakeLists.txt
+@@ -24,6 +24,6 @@ add_library(dbgen STATIC
+ 
+ target_link_libraries(dbgen
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ set_property(TARGET dbgen PROPERTY C_STANDARD 99)
+diff --git a/third_party/imdb/CMakeLists.txt b/third_party/imdb/CMakeLists.txt
+index 83fd400..faca024 100644
+--- a/third_party/imdb/CMakeLists.txt
++++ b/third_party/imdb/CMakeLists.txt
+@@ -9,6 +9,6 @@ add_library(imdblib STATIC imdb.c)
+ 
+ target_link_libraries(imdblib
+   PRIVATE
+-    MonetDB::monetdb_config_header
+-    MonetDB::monetdbe)
++    #MonetDB::monetdb_config_header
++    PkgConfig::monetdbe)
+ set_property(TARGET imdblib PROPERTY C_STANDARD 99)

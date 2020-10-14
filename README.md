@@ -50,3 +50,12 @@ mkdir build && cd build
 cmake -DCMAKE_PREFIX_PATH=$prefix .. #were $prefix is your monetdb install path
 cmake --build .
 ```
+
+
+## Missing cmake files
+If the MonetDB cmake files aren't found you could apply the monetdbe-examples.diff using patch
+and use:
+
+```
+PKG_CONFIG_PATH=$prefix/lib64/pkgconfig/ cmake .. #were $prefix is your monetdb install path
+```
