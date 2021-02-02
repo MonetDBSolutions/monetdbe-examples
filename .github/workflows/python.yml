@@ -21,7 +21,7 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build .
 
-    - name: Run all files
-      run: |
-         cd python
-         for f in *.py; do python3 "$f"; done
+    # - name: Run all files
+    #   run: |
+    #      cd python
+    #      for f in *.py; do python3 "$f"; done
