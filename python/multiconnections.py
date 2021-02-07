@@ -11,9 +11,12 @@
  For an explanation of the command arguments see the documentation
  https://monetdbe.readthedocs.io/en/latest/introduction.html
 """
+import os
 import monetdbe
 
 if __name__ == "__main__":
+    # remove any left over from a previous run
+    os.system("rm -rf db1 db2")
     conn1 = monetdbe.connect('db1', autocommit=True)
     if not conn1:
         print('Could not access database db1')
@@ -59,6 +62,7 @@ if __name__ == "__main__":
     for r in row:  
         print(r)
 
+  
     # and the first connection can still be used
     try:
         cur1.execute('select * from tmp1')
@@ -68,6 +72,21 @@ if __name__ == "__main__":
         cur2.execute('drop table tmp1');
     except monetdbe.DatabaseError as msg:
         print(f"Error, we should keep the connection to db1 around")
+
+    # re-connect to db1 and try again
+    print('Re-establish a connection with db1')
+    conn1 = monetdbe.connect('db1', autocommit=True)
+    if not conn1:
+        print('Could not access database db1')
+        exit -1
+    print("Connection to db1 established")
+    cur1 = conn1.cursor()
+    cur1.execute("select * from tmp1")
+    row = cur1.fetchall()
+    print('Retrieve the table from dr1')
+    for r in row:  
+        print(r)
+
 
     conn1.close()
     conn2.close()
