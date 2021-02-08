@@ -34,5 +34,12 @@ target_link_libraries(logs
     MonetDB::monetdbe)
 add_test(run_logs logs)
 
+add_executable(copy_into copy_into.c)
+target_link_libraries(copy_into
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_copy_into copy_into)
+
 add_subdirectory(tpch)
 add_subdirectory(imdb)
