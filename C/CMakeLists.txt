@@ -41,5 +41,13 @@ target_link_libraries(copy_into
     MonetDB::monetdbe)
 add_test(run_copy_into copy_into)
 
+add_executable(copy_into_threading copy_into_threading.c)
+target_link_libraries(copy_into_threading
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe
+    -lpthread)
+add_test(run_copy_into_threading copy_into_threading)
+
 add_subdirectory(tpch)
 add_subdirectory(imdb)
