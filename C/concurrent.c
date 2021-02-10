@@ -23,8 +23,6 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    monetdbe_result* result;
-
     pthread_t tid1;
     pthread_t tid2;
 
@@ -32,32 +30,9 @@ int main(int argc, char **argv) {
     pthread_create(&tid2, NULL, read_tables, NULL);
 
     pthread_join(tid1, NULL);
-    pthread_join(tid2, (void**) &result);
+    pthread_join(tid2, NULL);
 
 
-
-    if (result) {
-       monetdbe_column *cols[2];
-
-       // print the names of the result
-       for (size_t i = 0; i < result->ncols; i++) {
-               monetdbe_result_fetch(result, &cols[i], i);
-               printf("%s ", cols[i]->name);
-       }
-        printf("\n");
-        for (size_t row_idx = 0; row_idx < result->nrows; row_idx++) {
-            for (size_t col_idx = 0; col_idx < result->ncols; col_idx++) {
-                assert(cols[col_idx]->type == monetdbe_int32_t);
-                monetdbe_column_int32_t *col = (monetdbe_column_int32_t *)cols[col_idx];
-                int val = col->data[row_idx];
-                if (val == col->null_value)
-                    printf("NULL ");
-                else
-                    printf("%d ", val);
-            }
-            printf("\n");
-        }
-    }
 
     return monetdbe_close(db1) | monetdbe_close(db2) | monetdbe_close(db3);
 }
@@ -87,12 +62,43 @@ void* read_tables(void* args) {
         return NULL;
     }
 
-    do {
+    while (true) {
         if (monetdbe_query(db3, "SELECT * FROM integers", &result, NULL) != NULL) {
             fprintf(stderr, "Failed to query database\n");
             return NULL;
         }
-    } while (result->nrows == 0);
 
-    return result;
+        if (result->nrows == 0) {
+            printf("The table is still empty.\n");
+            monetdbe_cleanup_result(db3, result);
+        }
+        else
+            break;
+    }
+
+    printf("The table finally has content:\n");
+    monetdbe_column *cols[2];
+    // print the names of the result
+    for (size_t i = 0; i < result->ncols; i++) {
+            monetdbe_result_fetch(result, &cols[i], i);
+            printf("%s ", cols[i]->name);
+    }
+
+    printf("\n");
+    for (size_t row_idx = 0; row_idx < result->nrows; row_idx++) {
+        for (size_t col_idx = 0; col_idx < result->ncols; col_idx++) {
+            assert(cols[col_idx]->type == monetdbe_int32_t);
+            monetdbe_column_int32_t *col = (monetdbe_column_int32_t *)cols[col_idx];
+            int val = col->data[row_idx];
+            if (val == col->null_value)
+                printf("NULL ");
+            else
+                printf("%d ", val);
+        }
+        printf("\n");
+    }
+
+    monetdbe_cleanup_result(db3, result);
+
+    return NULL;
 }
