@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    return monetdbe_close(db1) || monetdbe_close(db2) || monetdbe_close(db3);
+    return monetdbe_close(db1) | monetdbe_close(db2) | monetdbe_close(db3);
 }
 
 void* write_tables(void* args) {
