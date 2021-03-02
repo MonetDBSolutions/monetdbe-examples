@@ -17,3 +17,5 @@ jobs:
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build .
         cmake --build . --target test
+        rm -rf /tmp/*csv
+        rm -rf dbx
