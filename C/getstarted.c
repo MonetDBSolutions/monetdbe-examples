@@ -5,7 +5,7 @@ int main() {
 	monetdbe_database db = NULL;
 	monetdbe_result *result;
 	monetdbe_column *cols[2];
-	size_t rows_affected = 0;
+	monetdbe_cnt rows_affected = 0;
 
 	if (monetdbe_open(&db, NULL /* inmemory database */, NULL /* no options */)) {
 		fprintf(stderr, "Failed to open database\n");
@@ -19,7 +19,7 @@ int main() {
 		fprintf(stderr, "Failed to query database\n");
 		goto cleanup;
 	}
-	printf("inserted %zu rows\n", rows_affected);
+	printf("inserted %zu rows\n", (size_t)rows_affected);
 	if (monetdbe_query(db, "SELECT * FROM integers", &result, NULL) != NULL) {
 		fprintf(stderr, "Failed to query database\n");
 		goto cleanup;

@@ -8,7 +8,7 @@ main(int argc, char **argv)
 	monetdbe_database db = NULL;
 	monetdbe_result *result;
 	monetdbe_column *cols[2];
-	size_t rows_affected = 0;
+	monetdbe_cnt rows_affected = 0;
 
 	if (monetdbe_open(&db, NULL /* inmemory database */, NULL /* no options */)) {
 		fprintf(stderr, "Failed to open database\n");
