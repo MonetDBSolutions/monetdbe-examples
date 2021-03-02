@@ -6,6 +6,13 @@
 # Copyright 2020 MonetDB Solutions B.V.
 #]]
 
+add_executable(getstarted getstarted.c)
+target_link_libraries(getstarted
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe)
+add_test(run_getstarted getstarted)
+
 add_executable(kickoff kickoff.c)
 target_link_libraries(kickoff
   PRIVATE

@@ -46,5 +46,5 @@ int main() {
 	// monetdbe_print_result(result);
 cleanup:
 	monetdbe_cleanup_result(db, result);
-	monetdbe_close(&db);
+	monetdbe_close(db);
 }
