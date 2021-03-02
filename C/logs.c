@@ -70,7 +70,7 @@ main(int argc, char **argv)
 	monetdbe_result* result = NULL;
     
     if (argc < 2) {
-	    fprintf(stderr, "location of the benchmark fiel (bench1.csv) missing\n");
+	    fprintf(stderr, "location of the benchmark file (bench1.csv) missing\n");
 	    return -1;
     }
     char* csv_path = argv[1];

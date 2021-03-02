@@ -39,7 +39,8 @@ target_link_libraries(logs
   PRIVATE
     MonetDB::monetdb_config_header
     MonetDB::monetdbe)
-add_test(run_logs logs)
+#needs a benchmark file
+#add_test(run_logs logs)
 
 add_executable(copy_into copy_into.c)
 target_link_libraries(copy_into

@@ -637,6 +637,8 @@ char*  get_table_name(int num) {
     switch (num) {
         case PART:
             return "part";
+        case PART_PSUPP:
+            return "part,partsupp";
         case PSUPP:
             return "partsupp";
         case SUPP:
@@ -645,6 +647,8 @@ char*  get_table_name(int num) {
             return "customer";
         case ORDER:
             return "orders";
+        case ORDER_LINE:
+            return "orders,lineitem";
         case LINE:
             return "lineitem";
         case NATION:

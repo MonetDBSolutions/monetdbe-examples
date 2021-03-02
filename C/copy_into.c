@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(int argc, char **argv) {
+int 
+main(int argc, char **argv) 
+{
 	monetdbe_database db = NULL;
 	monetdbe_result *result;
 	monetdbe_column *cols[2];
@@ -29,7 +31,7 @@ int main(int argc, char **argv) {
 		printf("%s ", cols[i]->name);
 	}
 
-    printf("\r\n");
+	printf("\r\n");
 
 	// print the data of the result
 	for (size_t row_idx = 0; row_idx < result->nrows; row_idx++) {
@@ -45,25 +47,24 @@ int main(int argc, char **argv) {
 		printf("\n");
 	}
 
-    if(argc < 2) {
-        fprintf(stderr, "csv file not specified");
-        return -1;
-    }
+	char* csv_path = NULL;
+	if (argc > 1)
+		csv_path = argv[1];
+	else
+		csv_path = "/tmp/dummy.csv";
+	char* err = NULL;
 
-    char* csv_path = argv[1];
-    char* err = NULL;
+	char* head="COPY SELECT * FROM integers INTO '";
+	char* tail = "' USING DELIMITERS ',' NULL AS ''";
+	char sql[1000];
+	strcpy(sql, head);
+	strcat(sql, csv_path);
+	strcat(sql, tail);
 
-    char* head="COPY SELECT * FROM integers INTO '";
-    char* tail = "' USING DELIMITERS ',' NULL AS ''";
-    char sql[1000];
-    strcpy(sql, head);
-    strcat(sql, csv_path);
-    strcat(sql, tail);
-    printf("%s\n", sql);
-    if((err=monetdbe_query(db, sql, NULL, NULL)) != NULL)
-        printf("%s\r\n", err);
-        return -1;
-
-    return 0;
+	if((err=monetdbe_query(db, sql, NULL, NULL)) != NULL) {
+		printf("%s\r\n", err);
+		return -1;
+	}
+	return 0;
 }
     

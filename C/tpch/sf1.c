@@ -216,9 +216,6 @@ int main(int argc, char **argv)
     CLOCK_QUERY(21, (char*) get_query(21));
     CLOCK_QUERY(22, (char*) get_query(22));
     
-    if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)
-        error(err);
-
     if (monetdbe_close(mdbe))
         error("Failed to close database");
 
