@@ -5,4 +5,5 @@ target_link_libraries(imdb
     MonetDB::monetdb_config_header
     MonetDB::monetdbe
     imdblib)
-add_test(run_imdb imdb)
+#needs a imdb data file
+#add_test(run_imdb imdb)
