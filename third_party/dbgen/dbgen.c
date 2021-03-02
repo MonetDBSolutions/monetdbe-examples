@@ -971,7 +971,7 @@ char* dbgen(double flt_scale, monetdbe_database mdbe, char* schema){
             }
             // actually doing something
             // rowcnt=10;
-            printf("%s, rowcount=%ld\n", get_table_name(i), rowcnt);
+            printf("%s, rowcount=%lld\n", get_table_name(i), rowcnt);
             printf("---------------\n");
             init_tbl((int)i, rowcnt, &tpch_info);
             gen_tbl((int)i, rowcnt, &tpch_info);
