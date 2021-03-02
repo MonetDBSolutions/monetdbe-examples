@@ -126,7 +126,7 @@ debug_data(monetdbe_result* result, char* err) {
     error(err);\
     col=(monetdbe_column_int64_t*) rcols[0];\
     r = (int64_t*) col->data;\
-    fprintf(stdout, "select count(*) from %s -- [%d]\n", #tbl, *r);\
+    fprintf(stdout, "select count(*) from %s -- [%ld]\n", #tbl, *r);\
     if ((err = monetdbe_cleanup_result(mdbe, result)) != NULL)\
     error(err);
 

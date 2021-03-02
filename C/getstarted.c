@@ -19,7 +19,7 @@ int main() {
 		fprintf(stderr, "Failed to query database\n");
 		goto cleanup;
 	}
-	printf("inserted %d rows\n", rows_affected);
+	printf("inserted %zu rows\n", rows_affected);
 	if (monetdbe_query(db, "SELECT * FROM integers", &result, NULL) != NULL) {
 		fprintf(stderr, "Failed to query database\n");
 		goto cleanup;
