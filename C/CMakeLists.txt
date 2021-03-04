@@ -57,5 +57,13 @@ target_link_libraries(concurrent
     -lpthread)
 add_test(run_copy_into_threading concurrent)
 
+add_executable(proxy proxy.c)
+target_link_libraries(proxy
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe
+    -lpthread)
+add_test(run_proxy proxy)
+
 add_subdirectory(tpch)
 add_subdirectory(imdb)
