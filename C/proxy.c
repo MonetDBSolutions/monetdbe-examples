@@ -24,10 +24,11 @@ main(int argc, char** argv)
 	monetdbe_database mdbe = NULL;
 	monetdbe_result* result = NULL;
 	assert(argc==3);
-	const int port = strtol(argv[1], NULL, 10);
-	const char* database = argv[2];
+	const int port = 50000;
+	const char* database = "demo";
+	/* Because of the start up order, this test (which connects too itself, doesn't run. */
 	monetdbe_remote remote = {.host="localhost", .port=port, .database=database, .username="monetdb", .password="monetdb"};
-	monetdbe_mapi_server server = {.port=port };
+	monetdbe_mapi_server server = {.port="50000" };
 	monetdbe_options opts = {.remote = &remote, .mapi_server = &server};
 
 	if (monetdbe_open(&mdbe, NULL, &opts))
