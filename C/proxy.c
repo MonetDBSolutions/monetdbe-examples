@@ -27,7 +27,8 @@ main(int argc, char** argv)
 	const int port = strtol(argv[1], NULL, 10);
 	const char* database = argv[2];
 	monetdbe_remote remote = {.host="localhost", .port=port, .database=database, .username="monetdb", .password="monetdb"};
-	monetdbe_options opts = {.remote = &remote};
+	monetdbe_mapi_server server = {.port=port };
+	monetdbe_options opts = {.remote = &remote, .mapi_server = &server};
 
 	if (monetdbe_open(&mdbe, NULL, &opts))
 		expected_error("Failed to open database")
