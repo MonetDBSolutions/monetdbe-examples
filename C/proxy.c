@@ -11,8 +11,6 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#if defined(MONETDBE_VERSION)
-
 #define expected_error(msg) {fprintf(stderr, "Failure: %s\n", msg); return 0;}
 #define error(msg) {fprintf(stderr, "Failure: %s\n", msg); return -1;}
 
@@ -22,20 +20,33 @@ main(int argc, char** argv)
 	(void) argc;
 	char* err = NULL;
 	monetdbe_database mdbe = NULL;
-	monetdbe_result* result = NULL;
-	assert(argc==3);
 	const int port = 50000;
-	const char* database = "demo";
+	const char* database = "devdb";
 	/* Because of the start up order, this test (which connects too itself, doesn't run. */
 	monetdbe_remote remote = {.host="localhost", .port=port, .database=database, .username="monetdb", .password="monetdb"};
-	monetdbe_mapi_server server = {.port="50000" };
+	monetdbe_mapi_server server = {.port="50001" };
 	monetdbe_options opts = {.remote = &remote, .mapi_server = &server};
 
 	if (monetdbe_open(&mdbe, NULL, &opts))
 		expected_error("Failed to open database")
-	if ((err = monetdbe_query(mdbe, "SELECT x, y FROM test ORDER BY y ASC; ", &result, NULL)) != NULL)
+	if ((err = monetdbe_query(mdbe, "DROP TABLE IF EXISTS test; ", NULL, NULL)) != NULL)
 		error(err)
-
+	if ((err = monetdbe_query(mdbe, "CREATE TABLE test (x INT, y STRING); ", NULL, NULL)) != NULL)
+		error(err)
+	if ((err = monetdbe_query(mdbe, "INSERT INTO test VALUES (10, 'foo'); ", NULL, NULL)) != NULL)
+		error(err)
+	if ((err = monetdbe_query(mdbe, "INSERT INTO test VALUES (20, 'bar'); ", NULL, NULL)) != NULL)
+		error(err)
+	
+	monetdbe_statement *stmt = NULL;
+	if ((err = monetdbe_prepare(mdbe, "SELECT x, y FROM test WHERE x > ?; ", &stmt)) != NULL)
+		error(err)
+	unsigned s = 10;
+	if ((err = monetdbe_bind(stmt, &s, 0)) != NULL)
+		error(err)
+	monetdbe_result* result = NULL;
+	if ((err = monetdbe_execute(stmt, &result, NULL)) != NULL)
+		error(err)
 	fprintf(stdout, "Query result with %zu cols and %"PRId64" rows\n", result->ncols, result->nrows);
 	for (int64_t r = 0; r < result->nrows; r++) {
 		for (size_t c = 0; c < result->ncols; c++) {
@@ -79,14 +90,3 @@ main(int argc, char** argv)
 		error("Failed to close database")
 	return 0;
 }
-#else
-
-int
-main(int argc, char** argv)
-{
-	(void)argc;
-	(void)argv;
-	printf("monetdbe remote not supported by MonetDB Oct2020 and older releases\n");
-	return 0;
-}
-#endif
