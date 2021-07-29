@@ -65,5 +65,13 @@ target_link_libraries(proxy
     -lpthread)
 add_test(run_proxy proxy)
 
+add_executable(decimal_argument decimal_argument.c)
+target_link_libraries(decimal_argument
+  PRIVATE
+    MonetDB::monetdb_config_header
+    MonetDB::monetdbe
+    -lpthread)
+add_test(run_decimal_argument decimal_argument)
+
 add_subdirectory(tpch)
 add_subdirectory(imdb)
