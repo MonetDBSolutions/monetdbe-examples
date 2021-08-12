@@ -19,7 +19,6 @@ daily life, we collected a handful of small examples to try it out.
 | kickoff.c    |the kickoff example to test part of the api|
 | tpch-sf1.py |the prototypical TPCH scale-factor 1 data warehouse|
 | taxi.py |the NYC taxi example  |
-| mgbench.py | A machine generated database benchmark |
 | logs.c | a snippet of the inhouse qa database |
 | proxy.c | a minimalistic monetdbe connection via the monetdbe remote capabilities with it self as a server setup |
 | multiconnections.c | multiple connections from same program |
