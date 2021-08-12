@@ -74,4 +74,3 @@ target_link_libraries(decimal_argument
 add_test(run_decimal_argument decimal_argument)
 
 add_subdirectory(tpch)
-add_subdirectory(imdb)

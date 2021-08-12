@@ -1,3 +1,0 @@
-files downloaded 2019-09-05 from ftp://ftp.fu-berlin.de/misc/movies/database/frozendata/ 
-
-The license and links to the current version IMDB data set can be found at http://www.imdb.com/interfaces
