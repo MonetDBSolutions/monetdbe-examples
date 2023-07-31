@@ -150,7 +150,7 @@ int main(int argc, char **argv)
     monetdbe_column* rcols[1];
     monetdbe_column_int64_t* col;
     int64_t* r;
-    char* q;
+    char q[4096] = { 0 };
     clock_t start, end;
 
     // second argument is a string for the db directory or NULL for in-memory mode
