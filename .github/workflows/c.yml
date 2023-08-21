@@ -13,7 +13,8 @@ jobs:
 
     - name: Install CMake
       run: |
-          apt install cmake
+          apt update -y
+          apt install cmake -y
 
     - name: Build
       run: |
