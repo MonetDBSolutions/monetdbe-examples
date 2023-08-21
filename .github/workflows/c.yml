@@ -13,10 +13,8 @@ jobs:
 
     - name: Install CMake
       run: |
-          DEBIAN_FRONTEND=noninteractive
-          TZ=Europe/Amsterdam
-          apt-get update -y
-          apt-get install cmake -y
+          DEBIAN_FRONTEND=noninteractive apt-get update -y
+          DEBIAN_FRONTEND=noninteractive apt-get install cmake -y
 
     - name: Build
       run: |
