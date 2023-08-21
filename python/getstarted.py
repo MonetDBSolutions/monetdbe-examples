@@ -15,8 +15,8 @@ import monetdbe
 
 if __name__ == "__main__":
     conn = monetdbe.connect(':memory:')
-    if not conn:
-        print('Could not access the memory')
+
+    assert conn
 
     c = conn.cursor()
     c.execute("CREATE TABLE integers(i INTEGER, j INTEGER);")
