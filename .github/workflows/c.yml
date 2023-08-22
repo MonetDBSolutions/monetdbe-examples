@@ -13,7 +13,9 @@ jobs:
 
     - name: Install cmake
       run: |
-        apt-get install cmake3
+        apt-get update 
+        apt-get install -y cmake bison libpcre3-dev libssl-dev curl python3 
+        rm -rf /var/lib/apt/lists/*
 
     - name: Build
       run: |
