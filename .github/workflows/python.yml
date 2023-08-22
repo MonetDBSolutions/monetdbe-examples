@@ -16,7 +16,10 @@ jobs:
       run: pip install monetdbe
 
     - name: Install cmake
-      run: apt-get install cmake
+      run: | 
+        apt-get update 
+        apt-get install -y cmake
+        rm -rf /var/lib/apt/lists/*
 
     - name: Build
       run: |
