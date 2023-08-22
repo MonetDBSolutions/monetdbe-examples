@@ -10,6 +10,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install cmake
+      run: |
+        apt install cmake3
+
     - name: Build
       run: |
         mkdir build && cd build
