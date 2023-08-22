@@ -16,7 +16,7 @@ jobs:
       run: pip install monetdbe
 
     - name: Install cmake
-      run: apt install cmake3
+      run: apt-get install cmake
 
     - name: Build
       run: |
