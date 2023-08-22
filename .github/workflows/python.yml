@@ -1,13 +1,7 @@
 name: Python
 
 
-on:
-    push:
-        branches:
-            - '*'
-     # this is run every monday at 12:00
-    schedule:
-        - cron: '0 12 * * 1' 
+on: [push]
 
 jobs:
   build:

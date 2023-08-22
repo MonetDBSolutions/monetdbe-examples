@@ -1,18 +1,12 @@
 name: C
 
-on:
-    push:
-        branches:
-            - '*'
-     # this is run every monday at 12:00
-    schedule:
-        - cron: '0 12 * * 1' 
+on: [push]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: monetdb/dev-builds:Oct2020
+    container: monetdb/dev-builds:default
 
     steps:
     - uses: actions/checkout@v2
