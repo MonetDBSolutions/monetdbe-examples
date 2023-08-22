@@ -7,10 +7,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: monetdb/dev-builds:Oct2020
+    container: monetdb/dev-builds:Jun2023
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install MonetDBe
       run: pip install monetdbe
