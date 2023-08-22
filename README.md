@@ -33,10 +33,10 @@ A quick guide to compile and install from source to create a library for your C 
 ```
 git clone https://github.com/MonetDB/MonetDB MonetDB
 cd MonetDB
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-```
+mkdir build && cd build                                                                                                                                                                     
+cmake -DCMAKE_PREFIX_PATH=<monetdb-installation-prefix>/share/monetdb/cmake -DCMAKE_INSTALL_PREFIX=<monetdb-installation-prefix> ..                                                         
+cmake --build .                                                                                                                                                                             
+```                                                                                                                                                                                         
 
 This results in the libmonetdbe.so library to be created and stored  .../lib64/libmonetdbe.so
 or .../build/tools/monetdbe/libmonetdbe.so. The necessary include file monetdbe.h is located
@@ -57,3 +57,4 @@ and use:
 ```
 PKG_CONFIG_PATH=$prefix/lib64/pkgconfig/ cmake .. #were $prefix is your monetdb install path
 ```
+
