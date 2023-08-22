@@ -34,7 +34,7 @@ A quick guide to compile and install from source to create a library for your C 
 git clone https://github.com/MonetDB/MonetDB MonetDB
 cd MonetDB
 mkdir build && cd build                                                                                                                                                                     
-cmake -DCMAKE_PREFIX_PATH=<monetdb-installation-prefix>/share/monetdb/cmake -DCMAKE_INSTALL_PREFIX=<monetdb-installation-prefix> ..                                                         
+cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .                                                                                                                                                                             
 ```                                                                                                                                                                                         
 
@@ -45,7 +45,7 @@ in the same place.
 Continue with the compilation of the examples using
 ```
 mkdir build && cd build
-cmake -DCMAKE_PREFIX_PATH=$prefix .. #were $prefix is your monetdb install path
+cmake -DCMAKE_PREFIX_PATH=<monetdb-installation-prefix>/share/monetdb/cmake -DCMAKE_INSTALL_PREFIX=<monetdb-installation-prefix> ..                                                         
 cmake --build .
 ```
 
