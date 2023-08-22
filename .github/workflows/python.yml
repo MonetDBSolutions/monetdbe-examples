@@ -18,7 +18,7 @@ jobs:
     - name: Install cmake
       run: | 
         apt-get update 
-        apt-get install -y cmake
+        DEBIAN_FRONTEND=noninteractive apt-get install -y cmake
         rm -rf /var/lib/apt/lists/*
 
     - name: Build
