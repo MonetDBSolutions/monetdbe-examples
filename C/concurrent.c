@@ -4,42 +4,10 @@
 #include <unistd.h> 
 #include <pthread.h> 
 
-static monetdbe_database db1 = NULL;
-static monetdbe_database db2 = NULL;
-static monetdbe_database db3 = NULL;
-
-void* write_tables(void* args);
-void* read_tables(void* args);
-
-int main(int argc, char **argv) {
-
-    if (monetdbe_open(&db1, NULL /* inmemory database */, NULL /* no options */)) {
-        fprintf(stderr, "Failed to open database\n");
-        return -1;
-    }
-
-    if (monetdbe_query(db1, "CREATE TABLE integers(i INTEGER, j INTEGER);", NULL, NULL) != NULL) {
-        fprintf(stderr, "Failed to query database\n");
-        return -1;
-    }
-
-    pthread_t tid1;
-    pthread_t tid2;
-
-    pthread_create(&tid1, NULL, write_tables, NULL);
-    pthread_create(&tid2, NULL, read_tables, NULL);
-
-    pthread_join(tid1, NULL);
-    pthread_join(tid2, NULL);
-
-
-
-    return monetdbe_close(db1) | monetdbe_close(db2) | monetdbe_close(db3);
-}
-
 void* write_tables(void* args) {
     (void) args;
     monetdbe_cnt rows_affected = 0;
+    monetdbe_database db2 = NULL;
 
     if (monetdbe_open(&db2, NULL /* inmemory database */, NULL /* no options */)) {
         fprintf(stderr, "Failed to open database\n");
@@ -50,11 +18,13 @@ void* write_tables(void* args) {
         fprintf(stderr, "Failed to query database\n");
     }
 
+    (void)monetdbe_close(db2);
     return NULL;
 }
 
 void* read_tables(void* args) {
     (void) args;
+    monetdbe_database db3 = NULL;
     monetdbe_result* result;
 
     if (monetdbe_open(&db3, NULL /* inmemory database */, NULL /* no options */)) {
@@ -99,6 +69,33 @@ void* read_tables(void* args) {
     }
 
     monetdbe_cleanup_result(db3, result);
-
+    (void)monetdbe_close(db3);
     return NULL;
 }
+
+int main(int argc, char **argv) 
+{
+    monetdbe_database db1 = NULL;
+
+    if (monetdbe_open(&db1, NULL /* inmemory database */, NULL /* no options */)) {
+        fprintf(stderr, "Failed to open database\n");
+        return -1;
+    }
+
+    if (monetdbe_query(db1, "CREATE TABLE integers(i INTEGER, j INTEGER);", NULL, NULL) != NULL) {
+        fprintf(stderr, "Failed to query database\n");
+        return -1;
+    }
+
+    pthread_t tid1;
+    pthread_t tid2;
+
+    pthread_create(&tid1, NULL, write_tables, NULL);
+    pthread_create(&tid2, NULL, read_tables, NULL);
+
+    pthread_join(tid1, NULL);
+    pthread_join(tid2, NULL);
+
+    return monetdbe_close(db1);
+}
+
