@@ -13,7 +13,7 @@ jobs:
 
     - name: Install cmake
       run: |
-        apt-get install cmake
+        apt-get install cmake3
 
     - name: Build
       run: |
